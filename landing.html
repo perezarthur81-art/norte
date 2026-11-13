@@ -1,0 +1,507 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Norte: sabe cuánto puedes gastar hoy | Arthur Labs</title>
+<meta name="description" content="Norte es una app de finanzas personales para quien cobra en efectivo o tiene ingresos variables. Te dice cuánto puedes gastar hoy, sin conectar tu banco y con un solo pago.">
+<meta name="theme-color" content="#F3F0E6" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0B1412" media="(prefers-color-scheme: dark)">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Norte">
+<meta property="og:title" content="Norte: sabe cuánto puedes gastar hoy | Arthur Labs">
+<meta property="og:description" content="Norte es una app de finanzas personales para quien cobra en efectivo o tiene ingresos variables. Te dice cuánto puedes gastar hoy, sin conectar tu banco y con un solo pago.">
+<meta property="og:locale" content="es_DO">
+<meta property="og:url" content="landing.html">
+<meta property="og:image" content="icons/icon-512.png">
+<link rel="alternate" hreflang="es" href="landing.html?lang=es">
+<link rel="alternate" hreflang="en" href="landing.html?lang=en">
+<link rel="alternate" hreflang="fr" href="landing.html?lang=fr">
+<link rel="alternate" hreflang="x-default" href="landing.html">
+<link rel="icon" href="favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="preload" href="fonts/bricolagegrotesque-n400_800-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="site.css">
+<script type="application/ld+json" id="ld">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "Norte",
+  "applicationCategory": "FinanceApplication",
+  "operatingSystem": "Web",
+  "description": "Norte es una app de finanzas personales para quien cobra en efectivo o tiene ingresos variables. Te dice cuánto puedes gastar hoy, sin conectar tu banco y con un solo pago.",
+  "inLanguage": ["es", "en", "fr"],
+  "publisher": { "@type": "Organization", "name": "Arthur Labs", "address": { "@type": "PostalAddress", "addressLocality": "Santo Domingo", "addressCountry": "DO" } },
+  "offers": [
+    { "@type": "Offer", "name": "Norte Gratis", "price": "0", "priceCurrency": "USD" },
+    { "@type": "Offer", "name": "Norte Pro", "price": "19.00", "priceCurrency": "USD" }
+  ]
+}
+</script>
+</head>
+<body>
+<div id="site"></div>
+<noscript>
+  <div class="noscript">
+    <h1>Norte</h1>
+    <p>Esta página necesita JavaScript para mostrarse. · This page needs JavaScript. · Cette page nécessite JavaScript.</p>
+    <p><a href="index.html">Norte</a> · <a href="privacidad.html">Privacidad / Privacy / Confidentialité</a> · <a href="terminos.html">Términos / Terms / Conditions</a></p>
+  </div>
+</noscript>
+<script src="site-config.js"></script>
+<script>
+(function () {
+'use strict';
+/* ── Motor común: idioma, configuración, cabecera y pie ── */
+var CFG = window.NORTE_SITE || {};
+var LANGS = ['es', 'en', 'fr'], LANG_KEY = 'norte.site.lang';
+var LANG_NAMES = { es: 'Español', en: 'English', fr: 'Français' };
+var OG_LOCALE = { es: 'es_DO', en: 'en_US', fr: 'fr_FR' };
+var APP_URL = 'index.html';
+var PRICE = String(CFG.PRICE || 'US$19');
+var CHECKOUT = /^https:\/\/\S+$/.test(String(CFG.CHECKOUT_URL || '').trim()) ? String(CFG.CHECKOUT_URL).trim() : '';
+var EMAIL = /^[^\s@<>"']+@[^\s@<>"']+\.[^\s@<>"']+$/.test(String(CFG.SUPPORT_EMAIL || '').trim()) ? String(CFG.SUPPORT_EMAIL).trim() : '';
+function esc(s) { return String(s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+function okLang(l) { return LANGS.indexOf(l) > -1; }
+function detectLang() {
+  var q = null, s = null;
+  try { q = new URLSearchParams(location.search).get('lang'); } catch (e) {}
+  if (q) { q = q.toLowerCase().slice(0, 2); if (okLang(q)) { try { localStorage.setItem(LANG_KEY, q); } catch (e) {} return q; } }
+  try { s = localStorage.getItem(LANG_KEY); } catch (e) {}
+  if (okLang(s)) return s;
+  var n = String(navigator.language || 'en').toLowerCase();
+  return n.indexOf('es') === 0 ? 'es' : n.indexOf('fr') === 0 ? 'fr' : 'en';
+}
+var lang = detectLang();
+function fill(s) { return String(s).replace(/\{price\}/g, esc(PRICE)); }
+/* Línea de contacto: solo existe si hay un correo real configurado. */
+function contact(tpl, tag) {
+  if (!EMAIL || !tpl) return '';
+  var a = '<a href="mailto:' + esc(EMAIL) + '">' + esc(EMAIL) + '</a>';
+  return '<' + (tag || 'p') + ' data-contact>' + fill(tpl).replace(/\{email\}/g, a) + '</' + (tag || 'p') + '>';
+}
+function href(page) { return page + '?lang=' + lang; }
+function buyBtn(C, cls) {
+  return CHECKOUT
+    ? '<a class="btn ' + cls + '" data-buy="checkout" href="' + esc(CHECKOUT) + '" rel="noopener">' + fill(C.buy) + '</a>'
+    : '<a class="btn ' + cls + '" data-buy="app" href="' + APP_URL + '">' + C.tryFree + '</a>';
+}
+var MARK = '<svg viewBox="0 0 32 32" aria-hidden="true" focusable="false"><circle class="mark-bg" cx="16" cy="16" r="15"/><path class="mark-n" d="M16 4.5l5 11.5H11z"/><path class="mark-n" d="M16 27.5L11 16h10z" opacity=".42"/></svg>';
+function header(C, navHtml) {
+  var b = LANGS.map(function (l) {
+    return '<button type="button" data-lang="' + l + '" lang="' + l + '" aria-pressed="' + (l === lang) + '" aria-label="' + LANG_NAMES[l] + '">' + l.toUpperCase() + '</button>';
+  }).join('');
+  return '<a class="skip" href="#main">' + C.skip + '</a>' +
+    '<header class="top"><div class="wrap top__in">' +
+    '<a class="brand" href="' + href('landing.html') + '" aria-label="' + C.homeAria + '">' + MARK + 'Norte</a>' +
+    (navHtml ? '<nav class="top__nav" aria-label="' + C.navAria + '">' + navHtml + '</nav>' : '') +
+    '<span class="top__sp"></span>' +
+    '<div class="langs" role="group" aria-label="' + C.langAria + '">' + b + '</div>' +
+    '<a class="btn btn--primary btn--sm" href="' + APP_URL + '">' + C.openApp + '</a>' +
+    '</div></header>';
+}
+function footer(C) {
+  return '<footer class="foot"><div class="wrap foot__in">' +
+    '<a class="brand" href="' + href('landing.html') + '" aria-label="' + C.homeAria + '">' + MARK + 'Norte</a>' +
+    '<nav aria-label="' + C.footAria + '"><ul>' +
+    '<li><a href="' + href('landing.html') + '">' + C.fHome + '</a></li>' +
+    '<li><a href="' + href('privacidad.html') + '">' + C.fPrivacy + '</a></li>' +
+    '<li><a href="' + href('terminos.html') + '">' + C.fTerms + '</a></li>' +
+    '<li><a href="' + APP_URL + '">' + C.openApp + '</a></li>' +
+    '</ul></nav>' +
+    '<div class="foot__legal"><p>' + C.fDisclaimer + '</p>' + contact(C.fContact) +
+    '<p>' + C.fSeller + '</p></div>' +
+    '</div></footer>';
+}
+function setMeta(sel, v) { var m = document.querySelector(sel); if (m) m.setAttribute('content', v); }
+function setHead(T) {
+  document.documentElement.lang = lang;
+  document.title = T.title;
+  setMeta('meta[name="description"]', fill(T.desc));
+  setMeta('meta[property="og:title"]', T.title);
+  setMeta('meta[property="og:description"]', fill(T.desc));
+  setMeta('meta[property="og:locale"]', OG_LOCALE[lang]);
+  if (/^https?:$/.test(location.protocol)) {
+    setMeta('meta[property="og:url"]', location.origin + location.pathname + '?lang=' + lang);
+    setMeta('meta[property="og:image"]', new URL('icons/icon-512.png', location.href).href);
+  }
+}
+function mount(renderBody) {
+  function draw(focusLang) {
+    document.getElementById('site').innerHTML = renderBody();
+    if (focusLang) { var b = document.querySelector('.langs [data-lang="' + lang + '"]'); if (b) b.focus(); }
+  }
+  document.addEventListener('click', function (e) {
+    var b = e.target.closest ? e.target.closest('.langs [data-lang]') : null;
+    if (!b) return;
+    var l = b.getAttribute('data-lang');
+    if (!okLang(l) || l === lang) return;
+    lang = l;
+    try { localStorage.setItem(LANG_KEY, l); } catch (err) {}
+    try { var u = new URL(location.href); u.searchParams.set('lang', l); history.replaceState(null, '', u.pathname + u.search + u.hash); } catch (err) {}
+    draw(true);
+  });
+  draw(false);
+  if (location.hash.length > 1) { try { var t = document.getElementById(decodeURIComponent(location.hash.slice(1))); if (t) t.scrollIntoView(); } catch (e) {} }
+}
+/* Textos comunes de cabecera y pie */
+var COMMON = {
+  es: { skip: 'Saltar al contenido', homeAria: 'Norte, página principal', navAria: 'Secciones', langAria: 'Idioma', footAria: 'Enlaces del pie', openApp: 'Abrir la app', tryFree: 'Probar gratis', buy: 'Comprar Pro · {price}',
+    fHome: 'Inicio', fPrivacy: 'Privacidad', fTerms: 'Términos y reembolsos',
+    fDisclaimer: 'Norte es una herramienta educativa para organizar tu dinero. No es asesoría financiera, fiscal, legal ni de inversión; los simuladores son ilustrativos.',
+    fContact: 'Ayuda: {email}', fSeller: '© 2026 Arthur Labs · Santo Domingo, República Dominicana' },
+  en: { skip: 'Skip to content', homeAria: 'Norte, home page', navAria: 'Sections', langAria: 'Language', footAria: 'Footer links', openApp: 'Open the app', tryFree: 'Try it free', buy: 'Buy Pro · {price}',
+    fHome: 'Home', fPrivacy: 'Privacy', fTerms: 'Terms and refunds',
+    fDisclaimer: 'Norte is an educational tool for organizing your money. It is not financial, tax, legal or investment advice; the simulators are illustrative.',
+    fContact: 'Help: {email}', fSeller: '© 2026 Arthur Labs · Santo Domingo, Dominican Republic' },
+  fr: { skip: 'Aller au contenu', homeAria: 'Norte, page d’accueil', navAria: 'Rubriques', langAria: 'Langue', footAria: 'Liens de pied de page', openApp: 'Ouvrir l’appli', tryFree: 'Essayer gratuitement', buy: 'Acheter Pro · {price}',
+    fHome: 'Accueil', fPrivacy: 'Confidentialité', fTerms: 'Conditions et remboursements',
+    fDisclaimer: 'Norte est un outil éducatif pour organiser votre argent. Ce n’est pas un conseil financier, fiscal, juridique ni en investissement ; les simulateurs sont fournis à titre indicatif.',
+    fContact: 'Aide : {email}', fSeller: '© 2026 Arthur Labs · Saint-Domingue, République dominicaine' }
+};
+
+/* ── Textos de la página de ventas ── */
+var I18N = {
+es: {
+  title: 'Norte: sabe cuánto puedes gastar hoy | Arthur Labs',
+  desc: 'Norte es una app de finanzas personales para quien cobra en efectivo o tiene ingresos variables. Te dice cuánto puedes gastar hoy, sin conectar tu banco y con un solo pago.',
+  nav: [['#como', 'Cómo funciona'], ['#planes', 'Gratis y Pro'], ['#precio', 'Precio'], ['#preguntas', 'Preguntas']],
+  heroSerial: 'Finanzas personales · Sin banco · Un solo pago',
+  h1: 'Sabe cuánto puedes <em>gastar hoy.</em>',
+  lead: 'Norte arma tu presupuesto y te dice, cada día, cuánto puedes gastar sin descuadrarte. Hecho para quien cobra en efectivo o no gana lo mismo todos los meses.',
+  seeHow: 'Ver cómo funciona',
+  heroNote: 'Gratis para empezar. Sin crear cuenta, sin tarjeta y sin conectar tu banco.',
+  altHome: 'Pantalla de inicio de Norte con datos de ejemplo: la tarjeta verde «Puedes gastar hoy» muestra el monto disponible del día.',
+  altAdd: 'Hoja «Nuevo movimiento» de Norte con un gasto de 500 y la categoría elegida.',
+  altBudget: 'Pantalla de presupuesto de Norte con datos de ejemplo: ingresos del mes y cero por asignar.',
+  altTx: 'Pantalla de movimientos de Norte con datos de ejemplo: ingresos, gastos y ahorro del mes, día por día.',
+  facts: [['0', 'cuentas que crear'], ['0', 'contraseñas de banco'], ['1', 'pago único para Pro'], ['3', 'idiomas: español, inglés y francés']],
+  factsAria: 'Norte en cuatro datos',
+  whoSerial: 'Para quién',
+  whoH: 'Para quien no cobra igual todos los meses.',
+  whoP: 'Muchas apps de finanzas dan por hecho un sueldo fijo y una cuenta bancaria. Norte no.',
+  who: [
+    ['Cobras en efectivo', 'Si tu dinero no pasa por un banco, una app que depende del banco no te sirve. En Norte registras tú mismo lo que entra y lo que sale, en segundos.'],
+    ['Tus ingresos cambian', 'Ventas, propinas, comisiones, trabajos por tu cuenta. Con el presupuesto base cero le das un destino a todo lo que entra, sea mucho o poco ese mes.'],
+    ['No quieres darle tu banco a nadie', 'Norte no pide usuario ni contraseña bancaria y no se conecta a ningún banco. Tus números se quedan en tu dispositivo.'],
+    ['Ya pagas demasiadas mensualidades', 'Lo esencial es gratis. Y si quieres Pro, lo pagas una sola vez.']
+  ],
+  howSerial: 'Cómo funciona',
+  howH: 'Tres pasos y ya sabes dónde estás parado.',
+  steps: [
+    ['Abre el enlace y arma tu presupuesto', 'No hay tienda de apps ni registro. Abres el enlace, la instalas en tu teléfono, tableta o computadora y dices cuánto entra. Norte te propone un presupuesto optimizado y tú lo ajustas.'],
+    ['Anota cada gasto en segundos', 'Con un toque, por voz o escribiendo una frase como «gasté 500 en gasolina». Funciona también sin internet.'],
+    ['Mira a dónde se fue y cuánto te queda', 'Ingresos, gastos y ahorro del mes, día por día. Y en el inicio, la tarjeta verde con lo que puedes gastar hoy.']
+  ],
+  stepWord: 'Paso',
+  plansSerial: 'Gratis y Pro',
+  plansH: 'Qué incluye cada plan.',
+  plansP: 'El plan gratis no es una demostración: alcanza para llevar tu mes completo. Pro añade las herramientas para planificar más lejos.',
+  thFeature: 'Función', thFree: 'Gratis', thPro: 'Pro',
+  yes: 'Incluido', no: 'No incluido', inf: 'Sin límite',
+  tblCaption: 'Comparación de funciones entre el plan Gratis y el plan Pro',
+  tbl: [
+    ['Día a día', ['Presupuesto base cero, con presupuesto optimizado automático', '«Puedes gastar hoy»: tu monto del día', 'Movimientos ilimitados', 'Registro rápido por voz o con una frase escrita', 'Pagos recurrentes y recordatorios dentro de la app', 'Todas las alertas inteligentes']],
+    ['Ahorro y metas', ['Fondo de emergencia', 'Metas de ahorro', 'Lista de deseos con periodo de enfriamiento', 'Puntaje de salud financiera', 'Patrimonio neto']],
+    ['Entre personas', ['Círculos de ahorro (san, tanda, susu, tontine)', 'Préstamos entre personas', 'Modo pareja, con reparto justo según ingresos']],
+    ['Planificar', ['Simulador de pago de deudas (avalancha o bola de nieve)', 'Simulador de inversión Monte Carlo y tu número de libertad financiera', 'Varias monedas, con tasa de cambio manual', 'Detección automática de suscripciones']],
+    ['Tus datos', ['Copia de seguridad: descargar y restaurar', 'Informes históricos', 'Exportar a CSV', 'Importar estados de cuenta en CSV o Excel']]
+  ],
+  tblFoot: 'Puedes probar todo Pro gratis durante 14 días dentro de la app, sin tarjeta.',
+  diffSerial: 'Por qué Norte',
+  diffH: 'Lo que hace distinto a Norte.',
+  diff: [
+    ['Tus datos viven en tu dispositivo', 'No hay cuenta ni conexión bancaria. Tampoco rastreo, anuncios ni peticiones a terceros: hasta las tipografías van dentro de la app.'],
+    ['Pagas una vez', 'Pro cuesta {price}, un solo pago, de por vida. No es una suscripción y no hay nada que cancelar.'],
+    ['Pensado para el efectivo y los ingresos variables', 'No necesita un banco para funcionar: tú registras lo que entra y lo que sale, y Norte hace las cuentas.'],
+    ['Sanes y préstamos entre personas', 'Lleva tu san, tanda, susu o tontine, y lo que prestas o te prestan, junto al resto de tu dinero.'],
+    ['Tres idiomas, todas las monedas', 'Español, inglés y francés. Todas las monedas ISO, con las de América Latina primero.']
+  ],
+  priceSerial: 'Precio',
+  priceH: 'Un precio. Una vez.',
+  priceP: 'Empieza gratis y quédate ahí si te basta. Cuando quieras más, Pro no trae mensualidad.',
+  freeH: 'Gratis', freeAmount: 'US$0', freeSub: 'Sin tarjeta y sin crear cuenta.',
+  freeList: ['Presupuesto base cero y «Puedes gastar hoy»', 'Movimientos ilimitados, por voz o por frase', 'Fondo de emergencia y 3 metas', 'Pagos recurrentes y recordatorios', '1 círculo de ahorro y 3 préstamos', 'Copia de seguridad de tus datos'],
+  proSerial: 'Pro · Pago único · De por vida',
+  proH: 'Norte Pro', proSub: 'Un solo pago. No es una suscripción.',
+  proList: ['Todo lo del plan gratis', 'Metas, círculos y préstamos sin límite', 'Simulador de pago de deudas', 'Simulador de inversión y número de libertad financiera', 'Modo pareja con reparto justo', 'Varias monedas', 'Informes históricos y exportación a CSV', 'Importación de estados de cuenta', 'Detección de suscripciones y todas las alertas', 'Actualizaciones futuras de esta versión'],
+  proNote: 'Prueba Pro 14 días gratis dentro de la app, sin tarjeta. La compra se hace por Hotmart y recibes tu clave de activación por correo en un plazo de 24 horas. Una licencia es para una persona y sus propios dispositivos.',
+  sealRing: 'GARANTÍA · REEMBOLSO EN 15 DÍAS · ', sealUnit: 'DÍAS', sealAria: 'Sello: garantía de reembolso de 15 días',
+  guarH: 'Garantía de 15 días',
+  guarP: 'Si Pro no es para ti, pide el reembolso por Hotmart dentro de los 15 días siguientes a la compra.',
+  faqSerial: 'Preguntas',
+  faqH: 'Lo que la gente pregunta antes de empezar.',
+  faq: [
+    ['¿Es segura?', '<p>Norte no tiene cuentas de usuario, no se conecta a tu banco y nunca te pide una contraseña bancaria. Tus datos se guardan en tu propio dispositivo y la app no hace peticiones a terceros, no rastrea y no muestra anuncios.</p><p>Eso también significa que la protección de esos datos depende de tu dispositivo: quien pueda abrir tu teléfono puede abrir Norte.</p>'],
+    ['¿Dónde están mis datos?', '<p>En tu dispositivo, dentro del navegador donde abriste o instalaste Norte. No se envían a Arthur Labs. Si borras los datos del navegador sin tener una copia de seguridad, se pierden y nadie puede recuperarlos.</p>'],
+    ['¿Qué pasa si cambio de teléfono?', '<p>Descarga una copia de seguridad en el teléfono viejo, abre Norte en el nuevo y restaura ese archivo. Si tienes Pro, vuelve a introducir tu clave: la licencia cubre tus propios dispositivos.</p>'],
+    ['¿Se conecta a mi banco?', '<p>No. Tú registras cada movimiento con un toque, por voz o con una frase. Con Pro puedes importar un estado de cuenta en CSV o Excel que tú mismo descargues de tu banco.</p>'],
+    ['¿Funciona en iPhone, Android y computadora?', '<p>Sí. Norte es una app web instalable (PWA): se abre desde un enlace en el navegador de tu teléfono, tableta o computadora, y desde ahí la instalas. No pasa por una tienda de apps.</p>'],
+    ['¿Funciona sin internet?', '<p>Sí. Después de abrirla la primera vez, Norte funciona sin conexión.</p>'],
+    ['¿Es una suscripción?', '<p>No. El plan gratis no cuesta nada y Pro es un solo pago de {price}, de por vida, con las actualizaciones futuras de esta versión incluidas.</p>'],
+    ['¿Puedo probar Pro antes de pagar?', '<p>Sí. Dentro de la app hay una prueba gratis de Pro de 14 días. No pide tarjeta.</p>'],
+    ['¿Cómo recibo mi clave?', '<p>La compra se hace por Hotmart. Después de comprar recibes tu clave de activación por correo en un plazo de 24 horas. La introduces en la app, en Más → Ajustes → Plan → Activar licencia.</p>', 'Si no te llega, escríbenos a {email}.'],
+    ['¿Puedo pedir un reembolso?', '<p>Sí. Tienes una garantía de 15 días: pide el reembolso por Hotmart dentro de ese plazo.</p>'],
+    ['¿En qué idiomas y monedas funciona?', '<p>En español, inglés y francés. Puedes elegir cualquier moneda ISO; las de América Latina aparecen primero. Con Pro puedes llevar varias monedas con una tasa de cambio que introduces tú.</p>'],
+    ['¿Norte me da asesoría financiera?', '<p>No. Norte es una herramienta educativa para organizar tu dinero. No es asesoría financiera, fiscal, legal ni de inversión, y los simuladores son ilustrativos: muestran escenarios, no prometen resultados.</p>']
+  ],
+  endSerial: 'Empieza hoy',
+  endH: 'Tu dinero, con rumbo desde hoy.',
+  endP: 'Abre Norte, carga los datos de ejemplo si quieres mirar primero, y en unos minutos sabrás cuánto puedes gastar hoy.'
+},
+en: {
+  title: 'Norte: know what you can spend today | Arthur Labs',
+  desc: 'Norte is a personal finance app for people paid in cash or with variable income. It tells you what you can spend today, with no bank connection and a single payment.',
+  nav: [['#como', 'How it works'], ['#planes', 'Free and Pro'], ['#precio', 'Price'], ['#preguntas', 'Questions']],
+  heroSerial: 'Personal finance · No bank link · One payment',
+  h1: 'Know what you can <em>spend today.</em>',
+  lead: 'Norte builds your budget and tells you, every day, how much you can spend without falling short. Made for people paid in cash or whose income changes from month to month.',
+  seeHow: 'See how it works',
+  heroNote: 'Free to start. No account, no card and no bank connection.',
+  altHome: 'Norte home screen with sample data: the green “You can spend today” card shows the amount available for the day.',
+  altAdd: 'Norte “New transaction” sheet with an expense of 500 and a category selected.',
+  altBudget: 'Norte budget screen with sample data: monthly income and zero left to assign.',
+  altTx: 'Norte transactions screen with sample data: income, spending and savings for the month, day by day.',
+  facts: [['0', 'accounts to create'], ['0', 'bank passwords'], ['1', 'payment for Pro, once'], ['3', 'languages: Spanish, English, French']],
+  factsAria: 'Norte in four facts',
+  whoSerial: 'Who it is for',
+  whoH: 'For people whose pay is never quite the same.',
+  whoP: 'Many finance apps assume a fixed salary and a bank account. Norte does not.',
+  who: [
+    ['You get paid in cash', 'If your money never goes through a bank, an app that depends on the bank is no use. In Norte you record what comes in and what goes out yourself, in seconds.'],
+    ['Your income changes', 'Sales, tips, commissions, freelance jobs. A zero-based budget gives every bit of income a job, whether it was a good month or a slow one.'],
+    ['You would rather not hand over your bank login', 'Norte never asks for a bank username or password and does not connect to any bank. Your numbers stay on your device.'],
+    ['You already pay too many monthly fees', 'The essentials are free. If you want Pro, you pay for it once.']
+  ],
+  howSerial: 'How it works',
+  howH: 'Three steps to know where you stand.',
+  steps: [
+    ['Open the link and build your budget', 'No app store and no sign-up. Open the link, install it on your phone, tablet or computer, and say how much comes in. Norte suggests an optimized budget and you adjust it.'],
+    ['Log each expense in seconds', 'With a tap, by voice, or by typing a sentence such as “spent 500 on gas”. It works offline too.'],
+    ['See where it went and what is left', 'Income, spending and savings for the month, day by day. On the home screen, the green card shows what you can spend today.']
+  ],
+  stepWord: 'Step',
+  plansSerial: 'Free and Pro',
+  plansH: 'What each plan includes.',
+  plansP: 'The free plan is not a demo: it is enough to run your whole month. Pro adds the tools for planning further ahead.',
+  thFeature: 'Feature', thFree: 'Free', thPro: 'Pro',
+  yes: 'Included', no: 'Not included', inf: 'Unlimited',
+  tblCaption: 'Feature comparison between the Free plan and the Pro plan',
+  tbl: [
+    ['Day to day', ['Zero-based budget, with an automatic optimized budget', '“You can spend today”: your daily amount', 'Unlimited transactions', 'Quick entry by voice or by typing a sentence', 'Recurring payments and reminders inside the app', 'All smart alerts']],
+    ['Savings and goals', ['Emergency fund', 'Savings goals', 'Wish list with a cooling-off period', 'Financial health score', 'Net worth']],
+    ['Between people', ['Savings circles (san, tanda, susu, tontine)', 'Loans between people', 'Partner mode, with a fair split by income']],
+    ['Planning', ['Debt payoff simulator (avalanche or snowball)', 'Monte Carlo investment simulator and your financial freedom number', 'Multiple currencies, with a manual exchange rate', 'Automatic subscription detection']],
+    ['Your data', ['Backup: download and restore', 'Historical reports', 'CSV export', 'Bank statement import from CSV or Excel']]
+  ],
+  tblFoot: 'You can try all of Pro free for 14 days inside the app, no card needed.',
+  diffSerial: 'Why Norte',
+  diffH: 'What makes Norte different.',
+  diff: [
+    ['Your data lives on your device', 'No account and no bank connection. No tracking, no ads and no third-party requests either: even the fonts ship inside the app.'],
+    ['You pay once', 'Pro costs {price}, a single payment, for life. It is not a subscription and there is nothing to cancel.'],
+    ['Built for cash and variable income', 'It does not need a bank to work: you record what comes in and what goes out, and Norte does the math.'],
+    ['Savings circles and loans between people', 'Keep track of your san, tanda, susu or tontine, and of what you lend or borrow, next to the rest of your money.'],
+    ['Three languages, every currency', 'Spanish, English and French. Every ISO currency, with Latin American ones listed first.']
+  ],
+  priceSerial: 'Price',
+  priceH: 'One price. Once.',
+  priceP: 'Start free and stay there if it is enough. When you want more, Pro has no monthly fee.',
+  freeH: 'Free', freeAmount: 'US$0', freeSub: 'No card and no account.',
+  freeList: ['Zero-based budget and “You can spend today”', 'Unlimited transactions, by voice or by sentence', 'Emergency fund and 3 goals', 'Recurring payments and reminders', '1 savings circle and 3 loans', 'Backup of your data'],
+  proSerial: 'Pro · One payment · Lifetime',
+  proH: 'Norte Pro', proSub: 'A single payment. Not a subscription.',
+  proList: ['Everything in the free plan', 'Unlimited goals, circles and loans', 'Debt payoff simulator', 'Investment simulator and financial freedom number', 'Partner mode with a fair split', 'Multiple currencies', 'Historical reports and CSV export', 'Bank statement import', 'Subscription detection and all alerts', 'Future updates of this version'],
+  proNote: 'Try Pro free for 14 days inside the app, no card needed. Purchases go through Hotmart, and your activation key arrives by email within 24 hours. One license is for one person and their own devices.',
+  sealRing: 'GUARANTEE · REFUND WITHIN 15 DAYS · ', sealUnit: 'DAYS', sealAria: 'Seal: 15-day refund guarantee',
+  guarH: '15-day guarantee',
+  guarP: 'If Pro is not for you, request a refund through Hotmart within 15 days of your purchase.',
+  faqSerial: 'Questions',
+  faqH: 'What people ask before they start.',
+  faq: [
+    ['Is it safe?', '<p>Norte has no user accounts, does not connect to your bank and never asks for a bank password. Your data is stored on your own device, and the app makes no third-party requests, does no tracking and shows no ads.</p><p>That also means the protection of that data depends on your device: anyone who can unlock your phone can open Norte.</p>'],
+    ['Where is my data?', '<p>On your device, inside the browser where you opened or installed Norte. It is not sent to Arthur Labs. If you clear your browser data without having a backup, it is lost and nobody can recover it.</p>'],
+    ['What if I change phones?', '<p>Download a backup on the old phone, open Norte on the new one and restore that file. If you have Pro, enter your key again: the license covers your own devices.</p>'],
+    ['Does it connect to my bank?', '<p>No. You record each transaction with a tap, by voice or with a sentence. With Pro you can import a CSV or Excel statement that you download from your bank yourself.</p>'],
+    ['Does it work on iPhone, Android and computers?', '<p>Yes. Norte is an installable web app (PWA): you open it from a link in the browser on your phone, tablet or computer, and install it from there. There is no app store involved.</p>'],
+    ['Does it work offline?', '<p>Yes. After you open it the first time, Norte works without a connection.</p>'],
+    ['Is it a subscription?', '<p>No. The free plan costs nothing, and Pro is a single payment of {price}, for life, with future updates of this version included.</p>'],
+    ['Can I try Pro before paying?', '<p>Yes. There is a free 14-day Pro trial inside the app. It does not ask for a card.</p>'],
+    ['How do I get my key?', '<p>Purchases go through Hotmart. After you buy, your activation key arrives by email within 24 hours. You enter it in the app, under More → Settings → Plan → Activate license.</p>', 'If it does not arrive, write to us at {email}.'],
+    ['Can I get a refund?', '<p>Yes. There is a 15-day guarantee: request the refund through Hotmart within that period.</p>'],
+    ['Which languages and currencies does it support?', '<p>Spanish, English and French. You can pick any ISO currency; Latin American ones are listed first. With Pro you can keep several currencies, with an exchange rate that you enter yourself.</p>'],
+    ['Does Norte give financial advice?', '<p>No. Norte is an educational tool for organizing your money. It is not financial, tax, legal or investment advice, and the simulators are illustrative: they show scenarios and promise no results.</p>']
+  ],
+  endSerial: 'Start today',
+  endH: 'Give your money a direction, starting today.',
+  endP: 'Open Norte, load the sample data if you would like to look around first, and in a few minutes you will know what you can spend today.'
+},
+fr: {
+  title: 'Norte : sachez combien dépenser aujourd’hui | Arthur Labs',
+  desc: 'Norte est une appli de finances personnelles pour celles et ceux qui sont payés en espèces ou dont les revenus varient. Elle vous dit combien dépenser aujourd’hui, sans connexion bancaire et avec un paiement unique.',
+  nav: [['#como', 'Fonctionnement'], ['#planes', 'Gratuit et Pro'], ['#precio', 'Prix'], ['#preguntas', 'Questions']],
+  heroSerial: 'Finances personnelles · Sans banque · Paiement unique',
+  h1: 'Sachez combien <em>dépenser aujourd’hui.</em>',
+  lead: 'Norte construit votre budget et vous indique, chaque jour, combien vous pouvez dépenser sans vous mettre à découvert. Conçue pour celles et ceux qui sont payés en espèces ou dont les revenus changent d’un mois à l’autre.',
+  seeHow: 'Voir le fonctionnement',
+  heroNote: 'Gratuit pour commencer. Sans compte, sans carte et sans connexion bancaire.',
+  altHome: 'Écran d’accueil de Norte avec des données d’exemple : la carte verte « À dépenser aujourd’hui » affiche le montant disponible pour la journée.',
+  altAdd: 'Feuille « Nouvelle opération » de Norte avec une dépense de 500 et une catégorie choisie.',
+  altBudget: 'Écran du budget de Norte avec des données d’exemple : revenus du mois et zéro restant à répartir.',
+  altTx: 'Écran des opérations de Norte avec des données d’exemple : revenus, dépenses et épargne du mois, jour par jour.',
+  facts: [['0', 'compte à créer'], ['0', 'mot de passe bancaire'], ['1', 'paiement unique pour Pro'], ['3', 'langues : espagnol, anglais, français']],
+  factsAria: 'Norte en quatre chiffres',
+  whoSerial: 'Pour qui',
+  whoH: 'Pour celles et ceux dont la paie n’est jamais la même.',
+  whoP: 'Beaucoup d’applis de finances supposent un salaire fixe et un compte bancaire. Pas Norte.',
+  who: [
+    ['Vous êtes payé en espèces', 'Si votre argent ne passe pas par une banque, une appli qui dépend de la banque ne vous sert à rien. Dans Norte, vous notez vous-même ce qui entre et ce qui sort, en quelques secondes.'],
+    ['Vos revenus varient', 'Ventes, pourboires, commissions, missions à votre compte. Avec le budget base zéro, chaque somme qui entre reçoit une destination, que le mois soit bon ou maigre.'],
+    ['Vous ne voulez confier vos accès bancaires à personne', 'Norte ne demande ni identifiant ni mot de passe bancaire et ne se connecte à aucune banque. Vos chiffres restent sur votre appareil.'],
+    ['Vous payez déjà trop d’abonnements', 'L’essentiel est gratuit. Et si vous voulez Pro, vous le payez une seule fois.']
+  ],
+  howSerial: 'Fonctionnement',
+  howH: 'Trois étapes pour savoir où vous en êtes.',
+  steps: [
+    ['Ouvrez le lien et montez votre budget', 'Pas de boutique d’applis, pas d’inscription. Vous ouvrez le lien, vous l’installez sur votre téléphone, tablette ou ordinateur, puis vous indiquez ce qui entre. Norte propose un budget optimisé que vous ajustez.'],
+    ['Notez chaque dépense en quelques secondes', 'D’un geste, à la voix, ou en tapant une phrase comme « dépensé 500 en essence ». Cela fonctionne aussi hors ligne.'],
+    ['Voyez où l’argent est parti et ce qu’il reste', 'Revenus, dépenses et épargne du mois, jour par jour. À l’accueil, la carte verte affiche ce que vous pouvez dépenser aujourd’hui.']
+  ],
+  stepWord: 'Étape',
+  plansSerial: 'Gratuit et Pro',
+  plansH: 'Ce que comprend chaque offre.',
+  plansP: 'L’offre gratuite n’est pas une démo : elle suffit pour gérer tout votre mois. Pro ajoute les outils pour planifier plus loin.',
+  thFeature: 'Fonction', thFree: 'Gratuit', thPro: 'Pro',
+  yes: 'Inclus', no: 'Non inclus', inf: 'Illimité',
+  tblCaption: 'Comparaison des fonctions entre l’offre Gratuit et l’offre Pro',
+  tbl: [
+    ['Au quotidien', ['Budget base zéro, avec budget optimisé automatique', '« À dépenser aujourd’hui » : votre montant du jour', 'Opérations illimitées', 'Saisie rapide à la voix ou par une phrase écrite', 'Paiements récurrents et rappels dans l’appli', 'Toutes les alertes intelligentes']],
+    ['Épargne et objectifs', ['Fonds d’urgence', 'Objectifs d’épargne', 'Liste d’envies avec délai de réflexion', 'Score de santé financière', 'Patrimoine net']],
+    ['Entre personnes', ['Cercles d’épargne (san, tanda, susu, tontine)', 'Prêts entre personnes', 'Mode couple, avec partage équitable selon les revenus']],
+    ['Planifier', ['Simulateur de remboursement de dettes (avalanche ou boule de neige)', 'Simulateur d’investissement Monte Carlo et votre chiffre de liberté financière', 'Plusieurs devises, avec taux de change manuel', 'Détection automatique des abonnements']],
+    ['Vos données', ['Sauvegarde : télécharger et restaurer', 'Rapports historiques', 'Export CSV', 'Import de relevés bancaires en CSV ou Excel']]
+  ],
+  tblFoot: 'Vous pouvez essayer tout Pro gratuitement pendant 14 jours dans l’appli, sans carte.',
+  diffSerial: 'Pourquoi Norte',
+  diffH: 'Ce qui distingue Norte.',
+  diff: [
+    ['Vos données vivent sur votre appareil', 'Pas de compte, pas de connexion bancaire. Pas de pistage, pas de publicité ni de requêtes vers des tiers non plus : même les polices sont embarquées dans l’appli.'],
+    ['Vous payez une fois', 'Pro coûte {price}, en un seul paiement, à vie. Ce n’est pas un abonnement et il n’y a rien à résilier.'],
+    ['Pensée pour les espèces et les revenus variables', 'Elle n’a pas besoin d’une banque pour fonctionner : vous notez ce qui entre et ce qui sort, Norte fait les calculs.'],
+    ['Cercles d’épargne et prêts entre personnes', 'Suivez votre san, tanda, susu ou tontine, ainsi que ce que vous prêtez ou empruntez, à côté du reste de votre argent.'],
+    ['Trois langues, toutes les devises', 'Espagnol, anglais et français. Toutes les devises ISO, celles d’Amérique latine en premier.']
+  ],
+  priceSerial: 'Prix',
+  priceH: 'Un prix. Une fois.',
+  priceP: 'Commencez gratuitement et restez-y si cela vous suffit. Le jour où vous voulez plus, Pro n’a pas de mensualité.',
+  freeH: 'Gratuit', freeAmount: 'US$0', freeSub: 'Sans carte et sans compte.',
+  freeList: ['Budget base zéro et « À dépenser aujourd’hui »', 'Opérations illimitées, à la voix ou par phrase', 'Fonds d’urgence et 3 objectifs', 'Paiements récurrents et rappels', '1 cercle d’épargne et 3 prêts', 'Sauvegarde de vos données'],
+  proSerial: 'Pro · Paiement unique · À vie',
+  proH: 'Norte Pro', proSub: 'Un seul paiement. Pas un abonnement.',
+  proList: ['Tout ce que comprend l’offre gratuite', 'Objectifs, cercles et prêts illimités', 'Simulateur de remboursement de dettes', 'Simulateur d’investissement et chiffre de liberté financière', 'Mode couple avec partage équitable', 'Plusieurs devises', 'Rapports historiques et export CSV', 'Import de relevés bancaires', 'Détection des abonnements et toutes les alertes', 'Mises à jour futures de cette version'],
+  proNote: 'Essayez Pro gratuitement pendant 14 jours dans l’appli, sans carte. L’achat se fait via Hotmart et votre clé d’activation arrive par e-mail sous 24 heures. Une licence vaut pour une personne et ses propres appareils.',
+  sealRing: 'GARANTIE · REMBOURSEMENT SOUS 15 JOURS · ', sealUnit: 'JOURS', sealAria: 'Sceau : garantie de remboursement de 15 jours',
+  guarH: 'Garantie de 15 jours',
+  guarP: 'Si Pro ne vous convient pas, demandez le remboursement via Hotmart dans les 15 jours suivant l’achat.',
+  faqSerial: 'Questions',
+  faqH: 'Ce que l’on demande avant de commencer.',
+  faq: [
+    ['Est-ce sûr ?', '<p>Norte n’a pas de comptes utilisateur, ne se connecte pas à votre banque et ne demande jamais de mot de passe bancaire. Vos données sont enregistrées sur votre propre appareil ; l’appli n’envoie aucune requête à des tiers, ne fait aucun pistage et n’affiche aucune publicité.</p><p>Cela veut aussi dire que la protection de ces données dépend de votre appareil : toute personne capable de déverrouiller votre téléphone peut ouvrir Norte.</p>'],
+    ['Où sont mes données ?', '<p>Sur votre appareil, dans le navigateur où vous avez ouvert ou installé Norte. Elles ne sont pas envoyées à Arthur Labs. Si vous effacez les données du navigateur sans avoir de sauvegarde, elles sont perdues et personne ne peut les récupérer.</p>'],
+    ['Que se passe-t-il si je change de téléphone ?', '<p>Téléchargez une sauvegarde sur l’ancien téléphone, ouvrez Norte sur le nouveau et restaurez ce fichier. Si vous avez Pro, saisissez de nouveau votre clé : la licence couvre vos propres appareils.</p>'],
+    ['Est-ce que Norte se connecte à ma banque ?', '<p>Non. Vous notez chaque opération d’un geste, à la voix ou par une phrase. Avec Pro, vous pouvez importer un relevé CSV ou Excel que vous téléchargez vous-même auprès de votre banque.</p>'],
+    ['Est-ce que cela fonctionne sur iPhone, Android et ordinateur ?', '<p>Oui. Norte est une appli web installable (PWA) : vous l’ouvrez depuis un lien dans le navigateur de votre téléphone, tablette ou ordinateur, puis vous l’installez. Aucune boutique d’applis n’intervient.</p>'],
+    ['Est-ce que cela fonctionne hors ligne ?', '<p>Oui. Une fois ouverte une première fois, Norte fonctionne sans connexion.</p>'],
+    ['Est-ce un abonnement ?', '<p>Non. L’offre gratuite ne coûte rien et Pro est un paiement unique de {price}, à vie, mises à jour futures de cette version comprises.</p>'],
+    ['Puis-je essayer Pro avant de payer ?', '<p>Oui. L’appli propose un essai gratuit de Pro de 14 jours. Aucune carte n’est demandée.</p>'],
+    ['Comment vais-je recevoir ma clé ?', '<p>L’achat se fait via Hotmart. Après l’achat, votre clé d’activation arrive par e-mail sous 24 heures. Vous la saisissez dans l’appli, dans Plus → Réglages → Offre → Activer la licence.</p>', 'Si elle n’arrive pas, écrivez-nous à {email}.'],
+    ['Puis-je être remboursé ?', '<p>Oui. Vous disposez d’une garantie de 15 jours : demandez le remboursement via Hotmart dans ce délai.</p>'],
+    ['Quelles langues et quelles devises ?', '<p>Espagnol, anglais et français. Vous pouvez choisir n’importe quelle devise ISO ; celles d’Amérique latine apparaissent en premier. Avec Pro, vous pouvez gérer plusieurs devises, avec un taux de change que vous saisissez vous-même.</p>'],
+    ['Norte donne-t-il des conseils financiers ?', '<p>Non. Norte est un outil éducatif pour organiser votre argent. Ce n’est pas un conseil financier, fiscal, juridique ni en investissement, et les simulateurs sont fournis à titre indicatif : ils montrent des scénarios, sans promettre de résultats.</p>']
+  ],
+  endSerial: 'Commencez aujourd’hui',
+  endH: 'Donnez un cap à votre argent dès aujourd’hui.',
+  endP: 'Ouvrez Norte, chargez les données d’exemple si vous préférez d’abord regarder, et en quelques minutes vous saurez combien dépenser aujourd’hui.'
+}
+};
+/* Valores de la tabla (iguales en los tres idiomas): [Gratis, Pro]. 1 = incluido, 0 = no, 'inf' = sin límite, o un número. */
+var TBL = [
+  [[1, 1], [1, 1], [1, 1], [1, 1], [1, 1], [0, 1]],
+  [[1, 1], ['3', 'inf'], [1, 1], [1, 1], [1, 1]],
+  [['1', 'inf'], ['3', 'inf'], [0, 1]],
+  [[0, 1], [0, 1], [0, 1], [0, 1]],
+  [[1, 1], [0, 1], [0, 1], [0, 1]]
+];
+
+function img(name, alt, eager) {
+  return '<img src="site-img/' + name + '-' + lang + '.webp" alt="' + esc(alt) + '" width="640" height="1385"' + (eager ? ' fetchpriority="high" decoding="async"' : ' loading="lazy" decoding="async"') + '>';
+}
+function cell(v, T) {
+  if (v === 1) return '<td class="yes"><svg viewBox="0 0 20 20" aria-hidden="true" focusable="false"><path d="M4 10.5l4 4 8-9.5" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="vh">' + T.yes + '</span></td>';
+  if (v === 0) return '<td class="no"><span aria-hidden="true">—</span><span class="vh">' + T.no + '</span></td>';
+  if (v === 'inf') return '<td class="yes"><span aria-hidden="true">∞</span><span class="vh">' + T.inf + '</span></td>';
+  return '<td>' + v + '</td>';
+}
+function body() {
+  var T = I18N[lang], C = COMMON[lang];
+  setHead(T);
+  var ld = document.getElementById('ld');
+  if (ld) { try { var j = JSON.parse(ld.textContent); j.description = T.desc; var n = (PRICE.match(/\d+(?:[.,]\d+)?/) || ['19'])[0].replace(',', '.'); j.offers[1].price = Number(n).toFixed(2); j.offers[0].name = 'Norte ' + T.freeH; ld.textContent = JSON.stringify(j); } catch (e) {} }
+  var nav = T.nav.map(function (n) { return '<a href="' + n[0] + '">' + n[1] + '</a>'; }).join('');
+  var second = CHECKOUT ? '<a class="btn btn--ghost" href="' + APP_URL + '">' + C.openApp + '</a>' : '<a class="btn btn--ghost" href="#como">' + T.seeHow + '</a>';
+  var h = header(C, nav) + '<main id="main">';
+
+  h += '<section class="hero"><div class="wrap hero__in"><div class="hero__copy">' +
+    '<p class="serial">' + T.heroSerial + '</p><h1>' + T.h1 + '</h1><p class="lead">' + T.lead + '</p>' +
+    '<div class="cta-row">' + buyBtn(C, 'btn--primary') + second + '</div>' +
+    '<p class="hero__note">' + T.heroNote + '</p></div>' +
+    '<div class="hero__art"><div class="phone phone--back">' + img('add', T.altAdd, false) + '</div><div class="phone">' + img('home', T.altHome, true) + '</div></div>' +
+    '</div></section>';
+
+  h += '<section class="facts" aria-label="' + T.factsAria + '"><div class="wrap"><ul>' + T.facts.map(function (f) { return '<li><b>' + f[0] + '</b><span>' + f[1] + '</span></li>'; }).join('') + '</ul></div></section>';
+
+  h += '<section class="sec" id="para-quien"><div class="wrap"><div class="sec__head"><p class="serial">' + T.whoSerial + '</p><h2>' + T.whoH + '</h2><p>' + T.whoP + '</p></div>' +
+    '<ul class="who">' + T.who.map(function (w) { return '<li><h3>' + w[0] + '</h3><p>' + w[1] + '</p></li>'; }).join('') + '</ul></div></section>';
+
+  var shots = [['budget', T.altBudget, ''], ['add', T.altAdd, ' shot--bottom'], ['tx', T.altTx, '']];
+  h += '<section class="sec sec--tint" id="como"><div class="wrap"><div class="sec__head"><p class="serial">' + T.howSerial + '</p><h2>' + T.howH + '</h2></div>' +
+    '<ol class="steps">' + T.steps.map(function (s, i) {
+      return '<li class="step"><div><p class="step__n">' + T.stepWord + ' 0' + (i + 1) + '</p><h3>' + s[0] + '</h3><p>' + s[1] + '</p></div><div class="shot' + shots[i][2] + '">' + img(shots[i][0], shots[i][1], false) + '</div></li>';
+    }).join('') + '</ol></div></section>';
+
+  var rows = T.tbl.map(function (g, gi) {
+    return '<tr class="cmp__g"><th colspan="3" scope="colgroup">' + g[0] + '</th></tr>' + g[1].map(function (r, ri) {
+      return '<tr><th scope="row">' + r + '</th>' + cell(TBL[gi][ri][0], T) + cell(TBL[gi][ri][1], T) + '</tr>';
+    }).join('');
+  }).join('');
+  h += '<section class="sec" id="planes"><div class="wrap plans"><div class="sec__head"><p class="serial">' + T.plansSerial + '</p><h2>' + T.plansH + '</h2><p>' + T.plansP + '</p></div>' +
+    '<div><table class="cmp"><caption class="vh">' + T.tblCaption + '</caption><thead><tr><th scope="col">' + T.thFeature + '</th><th scope="col">' + T.thFree + '</th><th scope="col">' + T.thPro + '</th></tr></thead><tbody>' + rows + '</tbody></table>' +
+    '<p class="cmp__foot">' + T.tblFoot + '</p></div></div></section>';
+
+  h += '<section class="sec sec--tint" id="distinto"><div class="wrap"><div class="sec__head"><p class="serial">' + T.diffSerial + '</p><h2>' + T.diffH + '</h2></div>' +
+    '<ol class="diff">' + T.diff.map(function (d, i) { return '<li><span class="diff__n" aria-hidden="true">0' + (i + 1) + '</span><h3>' + d[0] + '</h3><p>' + fill(d[1]) + '</p></li>'; }).join('') + '</ol></div></section>';
+
+  function ticks(a) { return '<ul class="ticks">' + a.map(function (x) { return '<li>' + x + '</li>'; }).join('') + '</ul>'; }
+  h += '<section class="sec" id="precio"><div class="wrap"><div class="sec__head"><p class="serial">' + T.priceSerial + '</p><h2>' + T.priceH + '</h2><p>' + T.priceP + '</p></div>' +
+    '<div class="price">' +
+    '<div class="card card--free"><h3>' + T.freeH + '</h3><p class="amount">' + T.freeAmount + '</p><p class="amount-sub">' + T.freeSub + '</p>' + ticks(T.freeList) + '<a class="btn btn--ghost btn--block" href="' + APP_URL + '">' + C.openApp + '</a></div>' +
+    '<div class="bill"><p class="serial">' + T.proSerial + '</p><h3>' + T.proH + '</h3><p class="amount">' + esc(PRICE) + '</p><p class="amount-sub">' + T.proSub + '</p>' + ticks(T.proList) + buyBtn(C, 'btn--paper btn--block') + '<p class="small">' + T.proNote + '</p></div>' +
+    '</div>' +
+    '<div class="guar"><svg class="seal" viewBox="0 0 132 132" role="img" aria-label="' + T.sealAria + '"><circle cx="66" cy="66" r="64" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="66" cy="66" r="60" fill="none" stroke="currentColor" stroke-width=".8"/><circle cx="66" cy="66" r="41" fill="none" stroke="currentColor" stroke-width=".8"/><path id="seal-path" d="M66 66m-47 0a47 47 0 1 1 94 0a47 47 0 1 1-94 0" fill="none"/><text class="seal__ring"><textPath href="#seal-path" textLength="290" lengthAdjust="spacing">' + T.sealRing + '</textPath></text><text class="seal__num" x="66" y="76" text-anchor="middle">15</text><text class="seal__unit" x="67" y="91" text-anchor="middle">' + T.sealUnit + '</text></svg>' +
+    '<div><h3>' + T.guarH + '</h3><p>' + T.guarP + '</p></div></div>' +
+    '</div></section>';
+
+  h += '<section class="sec sec--tint" id="preguntas"><div class="wrap faqs"><div class="sec__head"><p class="serial">' + T.faqSerial + '</p><h2>' + T.faqH + '</h2></div>' +
+    '<div class="faq">' + T.faq.map(function (q) { return '<details><summary><h3>' + q[0] + '</h3></summary><div class="ans">' + fill(q[1]) + contact(q[2]) + '</div></details>'; }).join('') + '</div></div></section>';
+
+  h += '<section class="end"><div class="wrap"><p class="serial">' + T.endSerial + '</p><h2>' + T.endH + '</h2><p>' + T.endP + '</p>' +
+    '<div class="cta-row">' + buyBtn(C, 'btn--paper') + (CHECKOUT ? '<a class="btn btn--ghost" href="' + APP_URL + '">' + C.openApp + '</a>' : '') + '</div></div></section>';
+
+  return h + '</main>' + footer(C);
+}
+mount(body);
+})();
+</script>
+</body>
+</html>

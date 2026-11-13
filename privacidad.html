@@ -1,0 +1,315 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Privacidad | Norte</title>
+<meta name="description" content="Política de privacidad de Norte: tus datos financieros se guardan solo en tu dispositivo. Sin cuentas, sin cookies, sin analítica y sin anuncios.">
+<meta name="theme-color" content="#F3F0E6" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0B1412" media="(prefers-color-scheme: dark)">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Norte">
+<meta property="og:title" content="Privacidad | Norte">
+<meta property="og:description" content="Política de privacidad de Norte: tus datos financieros se guardan solo en tu dispositivo. Sin cuentas, sin cookies, sin analítica y sin anuncios.">
+<meta property="og:locale" content="es_DO">
+<meta property="og:url" content="privacidad.html">
+<meta property="og:image" content="icons/icon-512.png">
+<link rel="alternate" hreflang="es" href="privacidad.html?lang=es">
+<link rel="alternate" hreflang="en" href="privacidad.html?lang=en">
+<link rel="alternate" hreflang="fr" href="privacidad.html?lang=fr">
+<link rel="alternate" hreflang="x-default" href="privacidad.html">
+<link rel="icon" href="favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="stylesheet" href="site.css">
+</head>
+<body>
+<div id="site"></div>
+<noscript>
+  <div class="noscript">
+    <h1>Norte</h1>
+    <p>Esta página necesita JavaScript para mostrarse. · This page needs JavaScript. · Cette page nécessite JavaScript.</p>
+    <p><a href="landing.html">Norte</a> · <a href="privacidad.html">Privacidad / Privacy / Confidentialité</a> · <a href="terminos.html">Términos / Terms / Conditions</a></p>
+  </div>
+</noscript>
+<script src="site-config.js"></script>
+<script>
+(function () {
+'use strict';
+/* ── Motor común: idioma, configuración, cabecera y pie ── */
+var CFG = window.NORTE_SITE || {};
+var LANGS = ['es', 'en', 'fr'], LANG_KEY = 'norte.site.lang';
+var LANG_NAMES = { es: 'Español', en: 'English', fr: 'Français' };
+var OG_LOCALE = { es: 'es_DO', en: 'en_US', fr: 'fr_FR' };
+var APP_URL = 'index.html';
+var PRICE = String(CFG.PRICE || 'US$19');
+var CHECKOUT = /^https:\/\/\S+$/.test(String(CFG.CHECKOUT_URL || '').trim()) ? String(CFG.CHECKOUT_URL).trim() : '';
+var EMAIL = /^[^\s@<>"']+@[^\s@<>"']+\.[^\s@<>"']+$/.test(String(CFG.SUPPORT_EMAIL || '').trim()) ? String(CFG.SUPPORT_EMAIL).trim() : '';
+function esc(s) { return String(s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+function okLang(l) { return LANGS.indexOf(l) > -1; }
+function detectLang() {
+  var q = null, s = null;
+  try { q = new URLSearchParams(location.search).get('lang'); } catch (e) {}
+  if (q) { q = q.toLowerCase().slice(0, 2); if (okLang(q)) { try { localStorage.setItem(LANG_KEY, q); } catch (e) {} return q; } }
+  try { s = localStorage.getItem(LANG_KEY); } catch (e) {}
+  if (okLang(s)) return s;
+  var n = String(navigator.language || 'en').toLowerCase();
+  return n.indexOf('es') === 0 ? 'es' : n.indexOf('fr') === 0 ? 'fr' : 'en';
+}
+var lang = detectLang();
+function fill(s) { return String(s).replace(/\{price\}/g, esc(PRICE)); }
+/* Línea de contacto: solo existe si hay un correo real configurado. */
+function contact(tpl, tag) {
+  if (!EMAIL || !tpl) return '';
+  var a = '<a href="mailto:' + esc(EMAIL) + '">' + esc(EMAIL) + '</a>';
+  return '<' + (tag || 'p') + ' data-contact>' + fill(tpl).replace(/\{email\}/g, a) + '</' + (tag || 'p') + '>';
+}
+function href(page) { return page + '?lang=' + lang; }
+function buyBtn(C, cls) {
+  return CHECKOUT
+    ? '<a class="btn ' + cls + '" data-buy="checkout" href="' + esc(CHECKOUT) + '" rel="noopener">' + fill(C.buy) + '</a>'
+    : '<a class="btn ' + cls + '" data-buy="app" href="' + APP_URL + '">' + C.tryFree + '</a>';
+}
+var MARK = '<svg viewBox="0 0 32 32" aria-hidden="true" focusable="false"><circle class="mark-bg" cx="16" cy="16" r="15"/><path class="mark-n" d="M16 4.5l5 11.5H11z"/><path class="mark-n" d="M16 27.5L11 16h10z" opacity=".42"/></svg>';
+function header(C, navHtml) {
+  var b = LANGS.map(function (l) {
+    return '<button type="button" data-lang="' + l + '" lang="' + l + '" aria-pressed="' + (l === lang) + '" aria-label="' + LANG_NAMES[l] + '">' + l.toUpperCase() + '</button>';
+  }).join('');
+  return '<a class="skip" href="#main">' + C.skip + '</a>' +
+    '<header class="top"><div class="wrap top__in">' +
+    '<a class="brand" href="' + href('landing.html') + '" aria-label="' + C.homeAria + '">' + MARK + 'Norte</a>' +
+    (navHtml ? '<nav class="top__nav" aria-label="' + C.navAria + '">' + navHtml + '</nav>' : '') +
+    '<span class="top__sp"></span>' +
+    '<div class="langs" role="group" aria-label="' + C.langAria + '">' + b + '</div>' +
+    '<a class="btn btn--primary btn--sm" href="' + APP_URL + '">' + C.openApp + '</a>' +
+    '</div></header>';
+}
+function footer(C) {
+  return '<footer class="foot"><div class="wrap foot__in">' +
+    '<a class="brand" href="' + href('landing.html') + '" aria-label="' + C.homeAria + '">' + MARK + 'Norte</a>' +
+    '<nav aria-label="' + C.footAria + '"><ul>' +
+    '<li><a href="' + href('landing.html') + '">' + C.fHome + '</a></li>' +
+    '<li><a href="' + href('privacidad.html') + '">' + C.fPrivacy + '</a></li>' +
+    '<li><a href="' + href('terminos.html') + '">' + C.fTerms + '</a></li>' +
+    '<li><a href="' + APP_URL + '">' + C.openApp + '</a></li>' +
+    '</ul></nav>' +
+    '<div class="foot__legal"><p>' + C.fDisclaimer + '</p>' + contact(C.fContact) +
+    '<p>' + C.fSeller + '</p></div>' +
+    '</div></footer>';
+}
+function setMeta(sel, v) { var m = document.querySelector(sel); if (m) m.setAttribute('content', v); }
+function setHead(T) {
+  document.documentElement.lang = lang;
+  document.title = T.title;
+  setMeta('meta[name="description"]', fill(T.desc));
+  setMeta('meta[property="og:title"]', T.title);
+  setMeta('meta[property="og:description"]', fill(T.desc));
+  setMeta('meta[property="og:locale"]', OG_LOCALE[lang]);
+  if (/^https?:$/.test(location.protocol)) {
+    setMeta('meta[property="og:url"]', location.origin + location.pathname + '?lang=' + lang);
+    setMeta('meta[property="og:image"]', new URL('icons/icon-512.png', location.href).href);
+  }
+}
+function mount(renderBody) {
+  function draw(focusLang) {
+    document.getElementById('site').innerHTML = renderBody();
+    if (focusLang) { var b = document.querySelector('.langs [data-lang="' + lang + '"]'); if (b) b.focus(); }
+  }
+  document.addEventListener('click', function (e) {
+    var b = e.target.closest ? e.target.closest('.langs [data-lang]') : null;
+    if (!b) return;
+    var l = b.getAttribute('data-lang');
+    if (!okLang(l) || l === lang) return;
+    lang = l;
+    try { localStorage.setItem(LANG_KEY, l); } catch (err) {}
+    try { var u = new URL(location.href); u.searchParams.set('lang', l); history.replaceState(null, '', u.pathname + u.search + u.hash); } catch (err) {}
+    draw(true);
+  });
+  draw(false);
+  if (location.hash.length > 1) { try { var t = document.getElementById(decodeURIComponent(location.hash.slice(1))); if (t) t.scrollIntoView(); } catch (e) {} }
+}
+/* Textos comunes de cabecera y pie */
+var COMMON = {
+  es: { skip: 'Saltar al contenido', homeAria: 'Norte, página principal', navAria: 'Secciones', langAria: 'Idioma', footAria: 'Enlaces del pie', openApp: 'Abrir la app', tryFree: 'Probar gratis', buy: 'Comprar Pro · {price}',
+    fHome: 'Inicio', fPrivacy: 'Privacidad', fTerms: 'Términos y reembolsos',
+    fDisclaimer: 'Norte es una herramienta educativa para organizar tu dinero. No es asesoría financiera, fiscal, legal ni de inversión; los simuladores son ilustrativos.',
+    fContact: 'Ayuda: {email}', fSeller: '© 2026 Arthur Labs · Santo Domingo, República Dominicana' },
+  en: { skip: 'Skip to content', homeAria: 'Norte, home page', navAria: 'Sections', langAria: 'Language', footAria: 'Footer links', openApp: 'Open the app', tryFree: 'Try it free', buy: 'Buy Pro · {price}',
+    fHome: 'Home', fPrivacy: 'Privacy', fTerms: 'Terms and refunds',
+    fDisclaimer: 'Norte is an educational tool for organizing your money. It is not financial, tax, legal or investment advice; the simulators are illustrative.',
+    fContact: 'Help: {email}', fSeller: '© 2026 Arthur Labs · Santo Domingo, Dominican Republic' },
+  fr: { skip: 'Aller au contenu', homeAria: 'Norte, page d’accueil', navAria: 'Rubriques', langAria: 'Langue', footAria: 'Liens de pied de page', openApp: 'Ouvrir l’appli', tryFree: 'Essayer gratuitement', buy: 'Acheter Pro · {price}',
+    fHome: 'Accueil', fPrivacy: 'Confidentialité', fTerms: 'Conditions et remboursements',
+    fDisclaimer: 'Norte est un outil éducatif pour organiser votre argent. Ce n’est pas un conseil financier, fiscal, juridique ni en investissement ; les simulateurs sont fournis à titre indicatif.',
+    fContact: 'Aide : {email}', fSeller: '© 2026 Arthur Labs · Saint-Domingue, République dominicaine' }
+};
+
+/* ── Política de privacidad: textos ── */
+var I18N = {
+es: {
+  title: 'Privacidad | Norte',
+  desc: 'Política de privacidad de Norte: tus datos financieros se guardan solo en tu dispositivo. Sin cuentas, sin cookies, sin analítica y sin anuncios.',
+  serial: 'Norte · Arthur Labs',
+  h1: 'Política de privacidad',
+  intro: 'Escrita en lenguaje claro. Explica qué datos existen cuando usas Norte, dónde están y qué recibe Arthur Labs si compras Pro.',
+  updated: 'Última actualización: 12 de noviembre de 2026.',
+  tocH: 'Contenido',
+  sections: [
+    { id: 'resumen', h: 'En pocas palabras', html:
+      '<ul class="key">' +
+      '<li>Tus datos financieros se guardan solo en tu dispositivo. Arthur Labs no los recibe ni puede verlos.</li>' +
+      '<li>No hay cuentas de usuario, conexión bancaria ni contraseñas de banco.</li>' +
+      '<li>No usamos cookies, analítica, anuncios ni rastreadores, y la app no hace peticiones a terceros.</li>' +
+      '<li>Si compras Pro, Hotmart nos comunica tu nombre, tu correo y el estado de tu compra. Nunca los datos de tu tarjeta.</li>' +
+      '<li>Las copias de seguridad dependen de ti.</li>' +
+      '</ul>' },
+    { id: 'responsable', h: 'Quién responde por esta política', html:
+      '<p>Norte es un producto de Arthur Labs, con sede en Santo Domingo, República Dominicana. En este texto, «nosotros» es Arthur Labs y «Norte» es la app web y este sitio.</p>' },
+    { id: 'datos-app', h: 'Los datos que guardas en Norte', html:
+      '<p>Todo lo que escribes en la app (ingresos, gastos, presupuestos, metas, deudas, círculos de ahorro, préstamos, patrimonio y tus preferencias, como el idioma y la moneda) se guarda en el almacenamiento del navegador de tu propio dispositivo.</p>' +
+      '<p>Esos datos no se envían a Arthur Labs. No tenemos una copia, no podemos verlos y no podemos recuperarlos por ti.</p>' +
+      '<p>Si dictas un movimiento con la función de voz de tu teclado o de tu navegador, ese reconocimiento de voz lo hace tu dispositivo o el proveedor de tu navegador, no Norte.</p>' +
+      '<p>La protección de estos datos depende de tu dispositivo: cualquier persona que pueda desbloquearlo y abrir tu navegador puede ver lo que guardaste en Norte.</p>' },
+    { id: 'compra', h: 'Lo que recibimos cuando compras Pro', html:
+      '<p>El pago de Pro se hace por Hotmart, que es quien cobra y procesa la compra. De Hotmart recibimos:</p>' +
+      '<ul><li>tu nombre,</li><li>tu correo electrónico,</li><li>el estado de tu compra (por ejemplo, aprobada o reembolsada).</li></ul>' +
+      '<p>Nunca recibimos los datos de tu tarjeta ni de tu medio de pago.</p>' +
+      '<p>Usamos esos datos para enviarte tu clave de activación, atender tus consultas y gestionar reembolsos. Los conservamos mientras sea necesario para atender tu licencia y cumplir nuestras obligaciones legales. No los vendemos ni los usamos para publicidad.</p>' +
+      '<p>El tratamiento que Hotmart hace de tus datos se rige por la política de privacidad de Hotmart.</p>' },
+    { id: 'cookies', h: 'Cookies, analítica y terceros', html:
+      '<p>Norte no usa cookies, herramientas de analítica, anuncios ni rastreadores. La app no hace peticiones a servicios de terceros: las tipografías y los demás archivos se sirven junto con la propia app.</p>' +
+      '<p>Este sitio guarda en tu navegador una sola preferencia, el idioma que elegiste, para mostrarte las páginas en ese idioma. No es una cookie y no se envía a ningún servidor.</p>' +
+      '<p>Como ocurre con cualquier sitio web, el servicio de alojamiento que entrega los archivos de Norte puede registrar datos técnicos de la conexión, como la dirección IP y la fecha, para funcionar y protegerse. No usamos esos registros para identificarte ni para seguir lo que haces.</p>' },
+    { id: 'copias', h: 'Copias de seguridad', html:
+      '<p>Puedes descargar un archivo de copia de seguridad desde la app y restaurarlo después, en el mismo dispositivo o en otro. Ese archivo contiene tus datos financieros: guárdalo en un lugar seguro y trátalo como un documento privado.</p>' +
+      '<p>Hacer copias es tu responsabilidad. Si borras los datos del navegador, desinstalas la app o pierdes el dispositivo sin tener una copia, tus datos se pierden y no podemos recuperarlos.</p>' },
+    { id: 'control', h: 'Tu control sobre tus datos', html:
+      '<p>Los datos de la app están en tus manos: puedes verlos, corregirlos, exportarlos con una copia de seguridad y borrarlos cuando quieras, desde la propia app o borrando los datos del navegador.</p>' +
+      '<p>Sobre los datos de tu compra (nombre, correo y estado), puedes pedirnos que te digamos cuáles tenemos, que los corrijamos o que los eliminemos cuando ya no sean necesarios.</p>' },
+    { id: 'cambios', h: 'Cambios en esta política', html:
+      '<p>Si esta política cambia, publicaremos aquí la versión nueva con su fecha. Si en el futuro Norte incorpora una función que envíe datos fuera de tu dispositivo, la explicaremos en esta página antes de que esté disponible.</p>' },
+    { id: 'contacto', h: 'Contacto', html:
+      '<p>Arthur Labs · Santo Domingo, República Dominicana.</p>',
+      contact: 'Para cualquier consulta sobre privacidad, escríbenos a {email}. Si nos escribes, usamos tu dirección y tu mensaje solo para responderte.' },
+    { id: 'idioma', h: 'Idioma', html:
+      '<p>Esta política está disponible en español, inglés y francés. Si hay diferencias entre las versiones, prevalece la versión en español.</p>' }
+  ]
+},
+en: {
+  title: 'Privacy | Norte',
+  desc: 'Norte privacy policy: your financial data is stored only on your device. No accounts, no cookies, no analytics and no ads.',
+  serial: 'Norte · Arthur Labs',
+  h1: 'Privacy policy',
+  intro: 'Written in plain language. It explains what data exists when you use Norte, where it lives, and what Arthur Labs receives if you buy Pro.',
+  updated: 'Last updated: November 12, 2026.',
+  tocH: 'Contents',
+  sections: [
+    { id: 'resumen', h: 'In short', html:
+      '<ul class="key">' +
+      '<li>Your financial data is stored only on your device. Arthur Labs does not receive it and cannot see it.</li>' +
+      '<li>There are no user accounts, no bank connection and no bank passwords.</li>' +
+      '<li>We use no cookies, analytics, ads or trackers, and the app makes no third-party requests.</li>' +
+      '<li>If you buy Pro, Hotmart gives us your name, your email and the status of your purchase. Never your card details.</li>' +
+      '<li>Backups are up to you.</li>' +
+      '</ul>' },
+    { id: 'responsable', h: 'Who is responsible for this policy', html:
+      '<p>Norte is a product of Arthur Labs, based in Santo Domingo, Dominican Republic. In this text, “we” means Arthur Labs and “Norte” means the web app and this site.</p>' },
+    { id: 'datos-app', h: 'The data you keep in Norte', html:
+      '<p>Everything you enter in the app (income, expenses, budgets, goals, debts, savings circles, loans, net worth and your preferences, such as language and currency) is stored in the browser storage of your own device.</p>' +
+      '<p>That data is not sent to Arthur Labs. We have no copy of it, we cannot see it, and we cannot recover it for you.</p>' +
+      '<p>If you dictate a transaction with the voice feature of your keyboard or your browser, that speech recognition is done by your device or by your browser provider, not by Norte.</p>' +
+      '<p>The protection of this data depends on your device: anyone who can unlock it and open your browser can see what you saved in Norte.</p>' },
+    { id: 'compra', h: 'What we receive when you buy Pro', html:
+      '<p>Pro is paid for through Hotmart, which charges and processes the purchase. From Hotmart we receive:</p>' +
+      '<ul><li>your name,</li><li>your email address,</li><li>the status of your purchase (for example, approved or refunded).</li></ul>' +
+      '<p>We never receive your card or payment method details.</p>' +
+      '<p>We use that data to send you your activation key, answer your questions and handle refunds. We keep it for as long as needed to support your license and meet our legal obligations. We do not sell it or use it for advertising.</p>' +
+      '<p>How Hotmart handles your data is governed by Hotmart’s own privacy policy.</p>' },
+    { id: 'cookies', h: 'Cookies, analytics and third parties', html:
+      '<p>Norte uses no cookies, analytics tools, ads or trackers. The app makes no requests to third-party services: the fonts and all other files are served together with the app itself.</p>' +
+      '<p>This site stores a single preference in your browser, the language you chose, so that pages are shown in that language. It is not a cookie and it is not sent to any server.</p>' +
+      '<p>As with any website, the hosting service that delivers the Norte files may record technical connection data, such as IP address and date, in order to operate and protect itself. We do not use those records to identify you or to follow what you do.</p>' },
+    { id: 'copias', h: 'Backups', html:
+      '<p>You can download a backup file from the app and restore it later, on the same device or on another one. That file contains your financial data: keep it somewhere safe and treat it as a private document.</p>' +
+      '<p>Making backups is your responsibility. If you clear your browser data, uninstall the app or lose the device without having a backup, your data is lost and we cannot recover it.</p>' },
+    { id: 'control', h: 'Your control over your data', html:
+      '<p>The app data is in your hands: you can view it, correct it, export it with a backup and delete it whenever you like, from the app itself or by clearing your browser data.</p>' +
+      '<p>For your purchase data (name, email and status), you can ask us to tell you what we hold, to correct it, or to delete it once it is no longer needed.</p>' },
+    { id: 'cambios', h: 'Changes to this policy', html:
+      '<p>If this policy changes, we will publish the new version here with its date. If Norte ever adds a feature that sends data outside your device, we will explain it on this page before it becomes available.</p>' },
+    { id: 'contacto', h: 'Contact', html:
+      '<p>Arthur Labs · Santo Domingo, Dominican Republic.</p>',
+      contact: 'For any privacy question, write to us at {email}. If you write to us, we use your address and your message only to reply to you.' },
+    { id: 'idioma', h: 'Language', html:
+      '<p>This policy is available in Spanish, English and French. If there is any discrepancy between versions, the Spanish version prevails.</p>' }
+  ]
+},
+fr: {
+  title: 'Confidentialité | Norte',
+  desc: 'Politique de confidentialité de Norte : vos données financières sont enregistrées uniquement sur votre appareil. Sans compte, sans cookies, sans mesure d’audience et sans publicité.',
+  serial: 'Norte · Arthur Labs',
+  h1: 'Politique de confidentialité',
+  intro: 'Rédigée en langage clair. Elle explique quelles données existent quand vous utilisez Norte, où elles se trouvent et ce que reçoit Arthur Labs si vous achetez Pro.',
+  updated: 'Dernière mise à jour : 12 novembre 2026.',
+  tocH: 'Sommaire',
+  sections: [
+    { id: 'resumen', h: 'En bref', html:
+      '<ul class="key">' +
+      '<li>Vos données financières sont enregistrées uniquement sur votre appareil. Arthur Labs ne les reçoit pas et ne peut pas les voir.</li>' +
+      '<li>Il n’y a ni compte utilisateur, ni connexion bancaire, ni mot de passe bancaire.</li>' +
+      '<li>Nous n’utilisons ni cookies, ni mesure d’audience, ni publicité, ni traceurs, et l’appli n’envoie aucune requête à des tiers.</li>' +
+      '<li>Si vous achetez Pro, Hotmart nous communique votre nom, votre e-mail et l’état de votre achat. Jamais les données de votre carte.</li>' +
+      '<li>Les sauvegardes dépendent de vous.</li>' +
+      '</ul>' },
+    { id: 'responsable', h: 'Qui répond de cette politique', html:
+      '<p>Norte est un produit d’Arthur Labs, établi à Saint-Domingue, en République dominicaine. Dans ce texte, « nous » désigne Arthur Labs et « Norte » désigne l’appli web et ce site.</p>' },
+    { id: 'datos-app', h: 'Les données que vous gardez dans Norte', html:
+      '<p>Tout ce que vous saisissez dans l’appli (revenus, dépenses, budgets, objectifs, dettes, cercles d’épargne, prêts, patrimoine et vos préférences, comme la langue et la devise) est enregistré dans le stockage du navigateur de votre propre appareil.</p>' +
+      '<p>Ces données ne sont pas envoyées à Arthur Labs. Nous n’en avons aucune copie, nous ne pouvons pas les voir et nous ne pouvons pas les récupérer pour vous.</p>' +
+      '<p>Si vous dictez une opération avec la fonction vocale de votre clavier ou de votre navigateur, cette reconnaissance vocale est effectuée par votre appareil ou par le fournisseur de votre navigateur, pas par Norte.</p>' +
+      '<p>La protection de ces données dépend de votre appareil : toute personne capable de le déverrouiller et d’ouvrir votre navigateur peut voir ce que vous avez enregistré dans Norte.</p>' },
+    { id: 'compra', h: 'Ce que nous recevons quand vous achetez Pro', html:
+      '<p>Le paiement de Pro passe par Hotmart, qui encaisse et traite l’achat. Hotmart nous transmet :</p>' +
+      '<ul><li>votre nom,</li><li>votre adresse e-mail,</li><li>l’état de votre achat (par exemple, approuvé ou remboursé).</li></ul>' +
+      '<p>Nous ne recevons jamais les données de votre carte ni de votre moyen de paiement.</p>' +
+      '<p>Nous utilisons ces données pour vous envoyer votre clé d’activation, répondre à vos questions et gérer les remboursements. Nous les conservons aussi longtemps que nécessaire pour assurer le suivi de votre licence et respecter nos obligations légales. Nous ne les vendons pas et ne les utilisons pas à des fins publicitaires.</p>' +
+      '<p>Le traitement de vos données par Hotmart est régi par la politique de confidentialité de Hotmart.</p>' },
+    { id: 'cookies', h: 'Cookies, mesure d’audience et tiers', html:
+      '<p>Norte n’utilise ni cookies, ni outils de mesure d’audience, ni publicité, ni traceurs. L’appli n’envoie aucune requête à des services tiers : les polices et tous les autres fichiers sont servis avec l’appli elle-même.</p>' +
+      '<p>Ce site enregistre une seule préférence dans votre navigateur, la langue que vous avez choisie, afin d’afficher les pages dans cette langue. Ce n’est pas un cookie et elle n’est envoyée à aucun serveur.</p>' +
+      '<p>Comme pour tout site web, le service d’hébergement qui délivre les fichiers de Norte peut enregistrer des données techniques de connexion, comme l’adresse IP et la date, afin de fonctionner et de se protéger. Nous n’utilisons pas ces journaux pour vous identifier ni pour suivre ce que vous faites.</p>' },
+    { id: 'copias', h: 'Sauvegardes', html:
+      '<p>Vous pouvez télécharger un fichier de sauvegarde depuis l’appli et le restaurer plus tard, sur le même appareil ou sur un autre. Ce fichier contient vos données financières : conservez-le en lieu sûr et traitez-le comme un document privé.</p>' +
+      '<p>Faire des sauvegardes relève de votre responsabilité. Si vous effacez les données du navigateur, désinstallez l’appli ou perdez l’appareil sans avoir de sauvegarde, vos données sont perdues et nous ne pouvons pas les récupérer.</p>' },
+    { id: 'control', h: 'Votre contrôle sur vos données', html:
+      '<p>Les données de l’appli sont entre vos mains : vous pouvez les consulter, les corriger, les exporter avec une sauvegarde et les supprimer quand vous voulez, depuis l’appli elle-même ou en effaçant les données du navigateur.</p>' +
+      '<p>Pour les données de votre achat (nom, e-mail et état), vous pouvez nous demander lesquelles nous détenons, de les corriger ou de les supprimer lorsqu’elles ne sont plus nécessaires.</p>' },
+    { id: 'cambios', h: 'Modifications de cette politique', html:
+      '<p>Si cette politique change, nous publierons ici la nouvelle version avec sa date. Si Norte ajoute un jour une fonction qui envoie des données hors de votre appareil, nous l’expliquerons sur cette page avant qu’elle soit disponible.</p>' },
+    { id: 'contacto', h: 'Contact', html:
+      '<p>Arthur Labs · Saint-Domingue, République dominicaine.</p>',
+      contact: 'Pour toute question de confidentialité, écrivez-nous à {email}. Si vous nous écrivez, nous utilisons votre adresse et votre message uniquement pour vous répondre.' },
+    { id: 'idioma', h: 'Langue', html:
+      '<p>Cette politique est disponible en espagnol, en anglais et en français. En cas de divergence entre les versions, la version espagnole prévaut.</p>' }
+  ]
+}
+};
+
+/* ── Render de página legal ── */
+function legalBody() {
+  var T = I18N[lang], C = COMMON[lang];
+  setHead(T);
+  var toc = T.sections.map(function (s) { return '<li><a href="#' + s.id + '">' + s.h + '</a></li>'; }).join('');
+  var secs = T.sections.map(function (s, i) {
+    return '<section id="' + s.id + '"><h2><span class="num" aria-hidden="true">' + (i < 9 ? '0' : '') + (i + 1) + '</span>' + s.h + '</h2>' + fill(s.html) + contact(s.contact) + '</section>';
+  }).join('');
+  return header(C, '') + '<main id="main" class="legal"><div class="wrap">' +
+    '<div class="legal__head"><p class="serial">' + T.serial + '</p><h1>' + T.h1 + '</h1><p>' + T.intro + '</p><p class="legal__meta">' + T.updated + '</p></div>' +
+    '<div class="legal__grid"><nav class="toc" aria-label="' + T.tocH + '"><h2>' + T.tocH + '</h2><ol>' + toc + '</ol></nav><div class="doc">' + secs + '</div></div>' +
+    '</div></main>' + footer(C);
+}
+mount(legalBody);
+})();
+</script>
+</body>
+</html>

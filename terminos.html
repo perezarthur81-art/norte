@@ -1,0 +1,330 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Términos de uso y reembolsos | Norte</title>
+<meta name="description" content="Términos de uso de Norte: planes, licencia Pro de pago único, garantía de reembolso de 15 días por Hotmart y límites de responsabilidad.">
+<meta name="theme-color" content="#F3F0E6" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0B1412" media="(prefers-color-scheme: dark)">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Norte">
+<meta property="og:title" content="Términos de uso y reembolsos | Norte">
+<meta property="og:description" content="Términos de uso de Norte: planes, licencia Pro de pago único, garantía de reembolso de 15 días por Hotmart y límites de responsabilidad.">
+<meta property="og:locale" content="es_DO">
+<meta property="og:url" content="terminos.html">
+<meta property="og:image" content="icons/icon-512.png">
+<link rel="alternate" hreflang="es" href="terminos.html?lang=es">
+<link rel="alternate" hreflang="en" href="terminos.html?lang=en">
+<link rel="alternate" hreflang="fr" href="terminos.html?lang=fr">
+<link rel="alternate" hreflang="x-default" href="terminos.html">
+<link rel="icon" href="favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="stylesheet" href="site.css">
+</head>
+<body>
+<div id="site"></div>
+<noscript>
+  <div class="noscript">
+    <h1>Norte</h1>
+    <p>Esta página necesita JavaScript para mostrarse. · This page needs JavaScript. · Cette page nécessite JavaScript.</p>
+    <p><a href="landing.html">Norte</a> · <a href="privacidad.html">Privacidad / Privacy / Confidentialité</a> · <a href="terminos.html">Términos / Terms / Conditions</a></p>
+  </div>
+</noscript>
+<script src="site-config.js"></script>
+<script>
+(function () {
+'use strict';
+/* ── Motor común: idioma, configuración, cabecera y pie ── */
+var CFG = window.NORTE_SITE || {};
+var LANGS = ['es', 'en', 'fr'], LANG_KEY = 'norte.site.lang';
+var LANG_NAMES = { es: 'Español', en: 'English', fr: 'Français' };
+var OG_LOCALE = { es: 'es_DO', en: 'en_US', fr: 'fr_FR' };
+var APP_URL = 'index.html';
+var PRICE = String(CFG.PRICE || 'US$19');
+var CHECKOUT = /^https:\/\/\S+$/.test(String(CFG.CHECKOUT_URL || '').trim()) ? String(CFG.CHECKOUT_URL).trim() : '';
+var EMAIL = /^[^\s@<>"']+@[^\s@<>"']+\.[^\s@<>"']+$/.test(String(CFG.SUPPORT_EMAIL || '').trim()) ? String(CFG.SUPPORT_EMAIL).trim() : '';
+function esc(s) { return String(s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+function okLang(l) { return LANGS.indexOf(l) > -1; }
+function detectLang() {
+  var q = null, s = null;
+  try { q = new URLSearchParams(location.search).get('lang'); } catch (e) {}
+  if (q) { q = q.toLowerCase().slice(0, 2); if (okLang(q)) { try { localStorage.setItem(LANG_KEY, q); } catch (e) {} return q; } }
+  try { s = localStorage.getItem(LANG_KEY); } catch (e) {}
+  if (okLang(s)) return s;
+  var n = String(navigator.language || 'en').toLowerCase();
+  return n.indexOf('es') === 0 ? 'es' : n.indexOf('fr') === 0 ? 'fr' : 'en';
+}
+var lang = detectLang();
+function fill(s) { return String(s).replace(/\{price\}/g, esc(PRICE)); }
+/* Línea de contacto: solo existe si hay un correo real configurado. */
+function contact(tpl, tag) {
+  if (!EMAIL || !tpl) return '';
+  var a = '<a href="mailto:' + esc(EMAIL) + '">' + esc(EMAIL) + '</a>';
+  return '<' + (tag || 'p') + ' data-contact>' + fill(tpl).replace(/\{email\}/g, a) + '</' + (tag || 'p') + '>';
+}
+function href(page) { return page + '?lang=' + lang; }
+function buyBtn(C, cls) {
+  return CHECKOUT
+    ? '<a class="btn ' + cls + '" data-buy="checkout" href="' + esc(CHECKOUT) + '" rel="noopener">' + fill(C.buy) + '</a>'
+    : '<a class="btn ' + cls + '" data-buy="app" href="' + APP_URL + '">' + C.tryFree + '</a>';
+}
+var MARK = '<svg viewBox="0 0 32 32" aria-hidden="true" focusable="false"><circle class="mark-bg" cx="16" cy="16" r="15"/><path class="mark-n" d="M16 4.5l5 11.5H11z"/><path class="mark-n" d="M16 27.5L11 16h10z" opacity=".42"/></svg>';
+function header(C, navHtml) {
+  var b = LANGS.map(function (l) {
+    return '<button type="button" data-lang="' + l + '" lang="' + l + '" aria-pressed="' + (l === lang) + '" aria-label="' + LANG_NAMES[l] + '">' + l.toUpperCase() + '</button>';
+  }).join('');
+  return '<a class="skip" href="#main">' + C.skip + '</a>' +
+    '<header class="top"><div class="wrap top__in">' +
+    '<a class="brand" href="' + href('landing.html') + '" aria-label="' + C.homeAria + '">' + MARK + 'Norte</a>' +
+    (navHtml ? '<nav class="top__nav" aria-label="' + C.navAria + '">' + navHtml + '</nav>' : '') +
+    '<span class="top__sp"></span>' +
+    '<div class="langs" role="group" aria-label="' + C.langAria + '">' + b + '</div>' +
+    '<a class="btn btn--primary btn--sm" href="' + APP_URL + '">' + C.openApp + '</a>' +
+    '</div></header>';
+}
+function footer(C) {
+  return '<footer class="foot"><div class="wrap foot__in">' +
+    '<a class="brand" href="' + href('landing.html') + '" aria-label="' + C.homeAria + '">' + MARK + 'Norte</a>' +
+    '<nav aria-label="' + C.footAria + '"><ul>' +
+    '<li><a href="' + href('landing.html') + '">' + C.fHome + '</a></li>' +
+    '<li><a href="' + href('privacidad.html') + '">' + C.fPrivacy + '</a></li>' +
+    '<li><a href="' + href('terminos.html') + '">' + C.fTerms + '</a></li>' +
+    '<li><a href="' + APP_URL + '">' + C.openApp + '</a></li>' +
+    '</ul></nav>' +
+    '<div class="foot__legal"><p>' + C.fDisclaimer + '</p>' + contact(C.fContact) +
+    '<p>' + C.fSeller + '</p></div>' +
+    '</div></footer>';
+}
+function setMeta(sel, v) { var m = document.querySelector(sel); if (m) m.setAttribute('content', v); }
+function setHead(T) {
+  document.documentElement.lang = lang;
+  document.title = T.title;
+  setMeta('meta[name="description"]', fill(T.desc));
+  setMeta('meta[property="og:title"]', T.title);
+  setMeta('meta[property="og:description"]', fill(T.desc));
+  setMeta('meta[property="og:locale"]', OG_LOCALE[lang]);
+  if (/^https?:$/.test(location.protocol)) {
+    setMeta('meta[property="og:url"]', location.origin + location.pathname + '?lang=' + lang);
+    setMeta('meta[property="og:image"]', new URL('icons/icon-512.png', location.href).href);
+  }
+}
+function mount(renderBody) {
+  function draw(focusLang) {
+    document.getElementById('site').innerHTML = renderBody();
+    if (focusLang) { var b = document.querySelector('.langs [data-lang="' + lang + '"]'); if (b) b.focus(); }
+  }
+  document.addEventListener('click', function (e) {
+    var b = e.target.closest ? e.target.closest('.langs [data-lang]') : null;
+    if (!b) return;
+    var l = b.getAttribute('data-lang');
+    if (!okLang(l) || l === lang) return;
+    lang = l;
+    try { localStorage.setItem(LANG_KEY, l); } catch (err) {}
+    try { var u = new URL(location.href); u.searchParams.set('lang', l); history.replaceState(null, '', u.pathname + u.search + u.hash); } catch (err) {}
+    draw(true);
+  });
+  draw(false);
+  if (location.hash.length > 1) { try { var t = document.getElementById(decodeURIComponent(location.hash.slice(1))); if (t) t.scrollIntoView(); } catch (e) {} }
+}
+/* Textos comunes de cabecera y pie */
+var COMMON = {
+  es: { skip: 'Saltar al contenido', homeAria: 'Norte, página principal', navAria: 'Secciones', langAria: 'Idioma', footAria: 'Enlaces del pie', openApp: 'Abrir la app', tryFree: 'Probar gratis', buy: 'Comprar Pro · {price}',
+    fHome: 'Inicio', fPrivacy: 'Privacidad', fTerms: 'Términos y reembolsos',
+    fDisclaimer: 'Norte es una herramienta educativa para organizar tu dinero. No es asesoría financiera, fiscal, legal ni de inversión; los simuladores son ilustrativos.',
+    fContact: 'Ayuda: {email}', fSeller: '© 2026 Arthur Labs · Santo Domingo, República Dominicana' },
+  en: { skip: 'Skip to content', homeAria: 'Norte, home page', navAria: 'Sections', langAria: 'Language', footAria: 'Footer links', openApp: 'Open the app', tryFree: 'Try it free', buy: 'Buy Pro · {price}',
+    fHome: 'Home', fPrivacy: 'Privacy', fTerms: 'Terms and refunds',
+    fDisclaimer: 'Norte is an educational tool for organizing your money. It is not financial, tax, legal or investment advice; the simulators are illustrative.',
+    fContact: 'Help: {email}', fSeller: '© 2026 Arthur Labs · Santo Domingo, Dominican Republic' },
+  fr: { skip: 'Aller au contenu', homeAria: 'Norte, page d’accueil', navAria: 'Rubriques', langAria: 'Langue', footAria: 'Liens de pied de page', openApp: 'Ouvrir l’appli', tryFree: 'Essayer gratuitement', buy: 'Acheter Pro · {price}',
+    fHome: 'Accueil', fPrivacy: 'Confidentialité', fTerms: 'Conditions et remboursements',
+    fDisclaimer: 'Norte est un outil éducatif pour organiser votre argent. Ce n’est pas un conseil financier, fiscal, juridique ni en investissement ; les simulateurs sont fournis à titre indicatif.',
+    fContact: 'Aide : {email}', fSeller: '© 2026 Arthur Labs · Saint-Domingue, République dominicaine' }
+};
+
+/* ── Términos de uso y reembolsos: textos ── */
+var I18N = {
+es: {
+  title: 'Términos de uso y reembolsos | Norte',
+  desc: 'Términos de uso de Norte: planes, licencia Pro de pago único, garantía de reembolso de 15 días por Hotmart y límites de responsabilidad.',
+  serial: 'Norte · Arthur Labs',
+  h1: 'Términos de uso y reembolsos',
+  intro: 'Las reglas para usar Norte, en lenguaje claro. Si usas la app o compras Pro, aceptas estos términos.',
+  updated: 'Última actualización: 12 de noviembre de 2026.',
+  tocH: 'Contenido',
+  sections: [
+    { id: 'que-es', h: 'Qué es Norte', html:
+      '<p>Norte es una app web (PWA) de finanzas personales de Arthur Labs, con sede en Santo Domingo, República Dominicana. Se instala desde un enlace en tu teléfono, tableta o computadora y funciona sin conexión. No requiere crear una cuenta ni conectar un banco.</p>' +
+      '<p>Estos términos se aplican a la app y a este sitio. Si no estás de acuerdo con ellos, no uses Norte.</p>' },
+    { id: 'planes', h: 'Planes y precio', html:
+      '<p><strong>Gratis.</strong> Puedes usar el plan gratis sin pagar y sin dar una tarjeta.</p>' +
+      '<p><strong>Pro.</strong> Es un pago único de {price}. No es una suscripción y no hay cobros recurrentes. «De por vida» significa que tu licencia de esta versión de Norte no tiene fecha de vencimiento; incluye las actualizaciones futuras de esta versión.</p>' +
+      '<p><strong>Prueba.</strong> Dentro de la app puedes probar Pro gratis durante 14 días, sin tarjeta. Al terminar la prueba sigues en el plan gratis y no se te cobra nada.</p>' },
+    { id: 'compra', h: 'Compra y activación', html:
+      '<p>La compra de Pro se hace por Hotmart, que procesa el pago. Después de comprar recibes tu clave de activación por correo en un plazo de 24 horas, en la dirección que diste al comprar.</p>' +
+      '<p>La clave se introduce en la app, en Ajustes → Planes → Activar licencia.</p>' },
+    { id: 'licencia', h: 'Licencia', html:
+      '<p>Al comprar Pro recibes una licencia personal para usar Norte Pro. Esto es lo que significa:</p>' +
+      '<ul class="key">' +
+      '<li>Una licencia es para una persona y sus propios dispositivos.</li>' +
+      '<li>No es transferible: no puedes cederla ni pasarla a otra persona.</li>' +
+      '<li>No puedes revenderla, alquilarla ni compartir o publicar tu clave.</li>' +
+      '</ul>' +
+      '<p>La app, su diseño, su código y la marca Norte pertenecen a Arthur Labs. La licencia te permite usar la app; no te da derecho a copiarla, modificarla ni redistribuirla. Si usas la licencia en contra de estas condiciones, tu derecho a usar Pro termina.</p>' },
+    { id: 'reembolsos', h: 'Reembolsos', html:
+      '<p>Pro tiene una garantía de 15 días. Si no es para ti, pide el reembolso por Hotmart dentro de los 15 días siguientes a la compra.</p>' +
+      '<p>Cuando una compra se reembolsa, la licencia correspondiente deja de ser válida. Puedes seguir usando el plan gratis.</p>' },
+    { id: 'datos', h: 'Tus datos y tus copias', html:
+      '<p>Tus datos se guardan solo en tu dispositivo. Puedes descargar una copia de seguridad y restaurarla después. Hacer y guardar esas copias es tu responsabilidad.</p>' +
+      '<p>Si borras los datos del navegador, desinstalas la app o pierdes el dispositivo sin una copia, tus datos se pierden. Arthur Labs no tiene copia de ellos y no puede recuperarlos. La <a href="privacidad.html?lang=es">política de privacidad</a> lo explica con más detalle.</p>' },
+    { id: 'asesoria', h: 'Norte no es asesoría', html:
+      '<p>Norte es una herramienta educativa para organizar tu dinero. No es asesoría financiera, fiscal, legal ni de inversión.</p>' +
+      '<p>Los simuladores (pago de deudas, inversión, libertad financiera) son ilustrativos: muestran escenarios calculados con los datos y supuestos que tú introduces, y no predicen ni garantizan resultados. Las decisiones que tomes con tu dinero son tuyas; para decisiones importantes, consulta a un profesional.</p>' },
+    { id: 'servicio', h: 'La app tal como es', html:
+      '<p>Trabajamos para que Norte funcione bien, pero se ofrece «tal cual». No garantizamos que esté libre de errores ni que funcione en todos los dispositivos y navegadores. Los cálculos dependen de los datos que introduces: revísalos.</p>' +
+      '<p>Podemos mejorar, cambiar o retirar funciones de la app. Las funciones de pago que compraste con Pro para esta versión siguen incluidas en tu licencia.</p>' },
+    { id: 'responsabilidad', h: 'Límite de responsabilidad', html:
+      '<p>En la medida en que la ley lo permita, Arthur Labs no responde por daños indirectos, por la pérdida de datos ni por las pérdidas o decisiones económicas derivadas del uso de Norte.</p>' +
+      '<p>En todo caso, nuestra responsabilidad total frente a ti se limita al importe que pagaste por tu licencia.</p>' +
+      '<p>Nada de lo anterior limita los derechos que la ley te reconoce como consumidor y que no se pueden excluir.</p>' },
+    { id: 'cambios', h: 'Cambios en estos términos', html:
+      '<p>Podemos actualizar estos términos. Publicaremos aquí la versión nueva con su fecha. Si sigues usando Norte después de un cambio, aceptas la versión nueva.</p>' },
+    { id: 'ley', h: 'Ley aplicable', html:
+      '<p>Estos términos se rigen por las leyes de la República Dominicana. Cualquier disputa se someterá a los tribunales competentes de la República Dominicana, sin perjuicio de los derechos irrenunciables que te reconozca la ley de tu lugar de residencia.</p>' },
+    { id: 'contacto', h: 'Contacto', html:
+      '<p>Arthur Labs · Santo Domingo, República Dominicana.</p>',
+      contact: 'Para cualquier consulta sobre tu compra, tu clave o estos términos, escríbenos a {email}.' },
+    { id: 'idioma', h: 'Idioma', html:
+      '<p>Estos términos están disponibles en español, inglés y francés. Si hay diferencias entre las versiones, prevalece la versión en español.</p>' }
+  ]
+},
+en: {
+  title: 'Terms of use and refunds | Norte',
+  desc: 'Norte terms of use: plans, the one-time Pro license, the 15-day refund guarantee through Hotmart, and limits of liability.',
+  serial: 'Norte · Arthur Labs',
+  h1: 'Terms of use and refunds',
+  intro: 'The rules for using Norte, in plain language. By using the app or buying Pro, you accept these terms.',
+  updated: 'Last updated: November 12, 2026.',
+  tocH: 'Contents',
+  sections: [
+    { id: 'que-es', h: 'What Norte is', html:
+      '<p>Norte is a personal finance web app (PWA) by Arthur Labs, based in Santo Domingo, Dominican Republic. It installs from a link on your phone, tablet or computer and works offline. It does not require an account or a bank connection.</p>' +
+      '<p>These terms apply to the app and to this site. If you do not agree with them, do not use Norte.</p>' },
+    { id: 'planes', h: 'Plans and price', html:
+      '<p><strong>Free.</strong> You can use the free plan without paying and without giving a card.</p>' +
+      '<p><strong>Pro.</strong> It is a one-time payment of {price}. It is not a subscription and there are no recurring charges. “Lifetime” means that your license for this version of Norte has no expiry date; it includes future updates of this version.</p>' +
+      '<p><strong>Trial.</strong> Inside the app you can try Pro free for 14 days, with no card. When the trial ends you stay on the free plan and nothing is charged.</p>' },
+    { id: 'compra', h: 'Purchase and activation', html:
+      '<p>Pro is purchased through Hotmart, which processes the payment. After you buy, your activation key arrives by email within 24 hours, at the address you gave when purchasing.</p>' +
+      '<p>You enter the key in the app, under Settings → Plans → Activate license.</p>' },
+    { id: 'licencia', h: 'License', html:
+      '<p>When you buy Pro you receive a personal license to use Norte Pro. This is what it means:</p>' +
+      '<ul class="key">' +
+      '<li>One license is for one person and their own devices.</li>' +
+      '<li>It is not transferable: you may not assign it or pass it on to someone else.</li>' +
+      '<li>You may not resell it, rent it out, or share or publish your key.</li>' +
+      '</ul>' +
+      '<p>The app, its design, its code and the Norte brand belong to Arthur Labs. The license lets you use the app; it does not give you the right to copy, modify or redistribute it. If you use the license against these conditions, your right to use Pro ends.</p>' },
+    { id: 'reembolsos', h: 'Refunds', html:
+      '<p>Pro comes with a 15-day guarantee. If it is not for you, request a refund through Hotmart within 15 days of your purchase.</p>' +
+      '<p>When a purchase is refunded, the corresponding license stops being valid. You can keep using the free plan.</p>' },
+    { id: 'datos', h: 'Your data and your backups', html:
+      '<p>Your data is stored only on your device. You can download a backup and restore it later. Making and keeping those backups is your responsibility.</p>' +
+      '<p>If you clear your browser data, uninstall the app or lose the device without a backup, your data is lost. Arthur Labs has no copy of it and cannot recover it. The <a href="privacidad.html?lang=en">privacy policy</a> explains this in more detail.</p>' },
+    { id: 'asesoria', h: 'Norte is not advice', html:
+      '<p>Norte is an educational tool for organizing your money. It is not financial, tax, legal or investment advice.</p>' +
+      '<p>The simulators (debt payoff, investment, financial freedom) are illustrative: they show scenarios calculated from the data and assumptions you enter, and they neither predict nor guarantee results. The decisions you make with your money are yours; for important decisions, consult a professional.</p>' },
+    { id: 'servicio', h: 'The app as it is', html:
+      '<p>We work to make Norte run well, but it is provided “as is”. We do not guarantee that it is free of errors or that it works on every device and browser. The calculations depend on the data you enter: check them.</p>' +
+      '<p>We may improve, change or remove features of the app. The paid features you bought with Pro for this version remain included in your license.</p>' },
+    { id: 'responsabilidad', h: 'Limitation of liability', html:
+      '<p>To the extent the law allows, Arthur Labs is not liable for indirect damages, for loss of data, or for financial losses or decisions arising from the use of Norte.</p>' +
+      '<p>In any case, our total liability to you is limited to the amount you paid for your license.</p>' +
+      '<p>Nothing above limits the rights the law gives you as a consumer that cannot be excluded.</p>' },
+    { id: 'cambios', h: 'Changes to these terms', html:
+      '<p>We may update these terms. We will publish the new version here with its date. If you keep using Norte after a change, you accept the new version.</p>' },
+    { id: 'ley', h: 'Governing law', html:
+      '<p>These terms are governed by the laws of the Dominican Republic. Any dispute will be submitted to the competent courts of the Dominican Republic, without prejudice to any rights you cannot waive under the law of your place of residence.</p>' },
+    { id: 'contacto', h: 'Contact', html:
+      '<p>Arthur Labs · Santo Domingo, Dominican Republic.</p>',
+      contact: 'For any question about your purchase, your key or these terms, write to us at {email}.' },
+    { id: 'idioma', h: 'Language', html:
+      '<p>These terms are available in Spanish, English and French. If there is any discrepancy between versions, the Spanish version prevails.</p>' }
+  ]
+},
+fr: {
+  title: 'Conditions d’utilisation et remboursements | Norte',
+  desc: 'Conditions d’utilisation de Norte : offres, licence Pro à paiement unique, garantie de remboursement de 15 jours via Hotmart et limites de responsabilité.',
+  serial: 'Norte · Arthur Labs',
+  h1: 'Conditions d’utilisation et remboursements',
+  intro: 'Les règles d’utilisation de Norte, en langage clair. En utilisant l’appli ou en achetant Pro, vous acceptez ces conditions.',
+  updated: 'Dernière mise à jour : 12 novembre 2026.',
+  tocH: 'Sommaire',
+  sections: [
+    { id: 'que-es', h: 'Ce qu’est Norte', html:
+      '<p>Norte est une appli web (PWA) de finances personnelles d’Arthur Labs, établi à Saint-Domingue, en République dominicaine. Elle s’installe depuis un lien sur votre téléphone, tablette ou ordinateur et fonctionne hors ligne. Elle ne demande ni création de compte ni connexion bancaire.</p>' +
+      '<p>Ces conditions s’appliquent à l’appli et à ce site. Si vous n’êtes pas d’accord avec elles, n’utilisez pas Norte.</p>' },
+    { id: 'planes', h: 'Offres et prix', html:
+      '<p><strong>Gratuit.</strong> Vous pouvez utiliser l’offre gratuite sans payer et sans fournir de carte.</p>' +
+      '<p><strong>Pro.</strong> C’est un paiement unique de {price}. Ce n’est pas un abonnement et il n’y a aucun prélèvement récurrent. « À vie » signifie que votre licence pour cette version de Norte n’a pas de date d’expiration ; elle comprend les mises à jour futures de cette version.</p>' +
+      '<p><strong>Essai.</strong> Dans l’appli, vous pouvez essayer Pro gratuitement pendant 14 jours, sans carte. À la fin de l’essai, vous restez sur l’offre gratuite et rien n’est facturé.</p>' },
+    { id: 'compra', h: 'Achat et activation', html:
+      '<p>L’achat de Pro se fait via Hotmart, qui traite le paiement. Après l’achat, votre clé d’activation arrive par e-mail sous 24 heures, à l’adresse indiquée lors de l’achat.</p>' +
+      '<p>La clé se saisit dans l’appli, dans Réglages → Offres → Activer la licence.</p>' },
+    { id: 'licencia', h: 'Licence', html:
+      '<p>En achetant Pro, vous recevez une licence personnelle d’utilisation de Norte Pro. Voici ce que cela signifie :</p>' +
+      '<ul class="key">' +
+      '<li>Une licence vaut pour une personne et ses propres appareils.</li>' +
+      '<li>Elle n’est pas transférable : vous ne pouvez ni la céder ni la transmettre à quelqu’un d’autre.</li>' +
+      '<li>Vous ne pouvez pas la revendre, la louer, ni partager ou publier votre clé.</li>' +
+      '</ul>' +
+      '<p>L’appli, son design, son code et la marque Norte appartiennent à Arthur Labs. La licence vous permet d’utiliser l’appli ; elle ne vous donne pas le droit de la copier, de la modifier ni de la redistribuer. Si vous utilisez la licence en violation de ces conditions, votre droit d’utiliser Pro prend fin.</p>' },
+    { id: 'reembolsos', h: 'Remboursements', html:
+      '<p>Pro bénéficie d’une garantie de 15 jours. Si Pro ne vous convient pas, demandez le remboursement via Hotmart dans les 15 jours suivant l’achat.</p>' +
+      '<p>Lorsqu’un achat est remboursé, la licence correspondante cesse d’être valable. Vous pouvez continuer à utiliser l’offre gratuite.</p>' },
+    { id: 'datos', h: 'Vos données et vos sauvegardes', html:
+      '<p>Vos données sont enregistrées uniquement sur votre appareil. Vous pouvez télécharger une sauvegarde et la restaurer plus tard. Faire et conserver ces sauvegardes relève de votre responsabilité.</p>' +
+      '<p>Si vous effacez les données du navigateur, désinstallez l’appli ou perdez l’appareil sans sauvegarde, vos données sont perdues. Arthur Labs n’en a aucune copie et ne peut pas les récupérer. La <a href="privacidad.html?lang=fr">politique de confidentialité</a> l’explique plus en détail.</p>' },
+    { id: 'asesoria', h: 'Norte n’est pas un conseil', html:
+      '<p>Norte est un outil éducatif pour organiser votre argent. Ce n’est pas un conseil financier, fiscal, juridique ni en investissement.</p>' +
+      '<p>Les simulateurs (remboursement de dettes, investissement, liberté financière) sont fournis à titre indicatif : ils montrent des scénarios calculés à partir des données et des hypothèses que vous saisissez, et ne prédisent ni ne garantissent aucun résultat. Les décisions que vous prenez avec votre argent vous appartiennent ; pour les décisions importantes, consultez un professionnel.</p>' },
+    { id: 'servicio', h: 'L’appli telle qu’elle est', html:
+      '<p>Nous travaillons à ce que Norte fonctionne bien, mais l’appli est fournie « en l’état ». Nous ne garantissons pas qu’elle soit exempte d’erreurs ni qu’elle fonctionne sur tous les appareils et navigateurs. Les calculs dépendent des données que vous saisissez : vérifiez-les.</p>' +
+      '<p>Nous pouvons améliorer, modifier ou retirer des fonctions de l’appli. Les fonctions payantes achetées avec Pro pour cette version restent comprises dans votre licence.</p>' },
+    { id: 'responsabilidad', h: 'Limitation de responsabilité', html:
+      '<p>Dans la mesure permise par la loi, Arthur Labs ne répond pas des dommages indirects, de la perte de données, ni des pertes ou décisions financières découlant de l’utilisation de Norte.</p>' +
+      '<p>Dans tous les cas, notre responsabilité totale envers vous est limitée au montant que vous avez payé pour votre licence.</p>' +
+      '<p>Rien de ce qui précède ne limite les droits que la loi vous reconnaît en tant que consommateur et qui ne peuvent pas être exclus.</p>' },
+    { id: 'cambios', h: 'Modifications de ces conditions', html:
+      '<p>Nous pouvons mettre à jour ces conditions. Nous publierons ici la nouvelle version avec sa date. Si vous continuez à utiliser Norte après une modification, vous acceptez la nouvelle version.</p>' },
+    { id: 'ley', h: 'Droit applicable', html:
+      '<p>Ces conditions sont régies par les lois de la République dominicaine. Tout litige sera soumis aux tribunaux compétents de la République dominicaine, sans préjudice des droits auxquels vous ne pouvez pas renoncer en vertu de la loi de votre lieu de résidence.</p>' },
+    { id: 'contacto', h: 'Contact', html:
+      '<p>Arthur Labs · Saint-Domingue, République dominicaine.</p>',
+      contact: 'Pour toute question sur votre achat, votre clé ou ces conditions, écrivez-nous à {email}.' },
+    { id: 'idioma', h: 'Langue', html:
+      '<p>Ces conditions sont disponibles en espagnol, en anglais et en français. En cas de divergence entre les versions, la version espagnole prévaut.</p>' }
+  ]
+}
+};
+
+/* ── Render de página legal ── */
+function legalBody() {
+  var T = I18N[lang], C = COMMON[lang];
+  setHead(T);
+  var toc = T.sections.map(function (s) { return '<li><a href="#' + s.id + '">' + s.h + '</a></li>'; }).join('');
+  var secs = T.sections.map(function (s, i) {
+    return '<section id="' + s.id + '"><h2><span class="num" aria-hidden="true">' + (i < 9 ? '0' : '') + (i + 1) + '</span>' + s.h + '</h2>' + fill(s.html) + contact(s.contact) + '</section>';
+  }).join('');
+  return header(C, '') + '<main id="main" class="legal"><div class="wrap">' +
+    '<div class="legal__head"><p class="serial">' + T.serial + '</p><h1>' + T.h1 + '</h1><p>' + T.intro + '</p><p class="legal__meta">' + T.updated + '</p></div>' +
+    '<div class="legal__grid"><nav class="toc" aria-label="' + T.tocH + '"><h2>' + T.tocH + '</h2><ol>' + toc + '</ol></nav><div class="doc">' + secs + '</div></div>' +
+    '</div></main>' + footer(C);
+}
+mount(legalBody);
+})();
+</script>
+</body>
+</html>

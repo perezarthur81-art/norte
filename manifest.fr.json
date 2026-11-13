@@ -1,0 +1,44 @@
+{
+  "name": "Norte : finances personnelles",
+  "short_name": "Norte",
+  "description": "Chaque sou a sa mission. Budget, reste à dépenser du jour, objectifs et dettes, sur votre appareil.",
+  "lang": "fr",
+  "dir": "ltr",
+  "id": "./",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#EEF3F1",
+  "theme_color": "#0D5E4F",
+  "categories": [
+    "finance",
+    "productivity"
+  ],
+  "icons": [
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-maskable-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "icons/icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}
