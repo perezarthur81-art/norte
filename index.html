@@ -783,7 +783,7 @@ i18nLoad([["{0}% de tu ingreso va a ahorro e inversión (meta: 20%)","{0}% of yo
 ["Regla del excedente: {0} a tu colchón o deuda, {1} a metas o inversión y {2} para disfrutar sin culpa.","Surplus rule: {0} to your cushion or debt, {1} to goals or investing and {2} to enjoy guilt-free.","Règle de l’excédent : {0} pour votre matelas ou vos dettes, {1} pour vos objectifs ou l’investissement et {2} pour vous faire plaisir sans culpabilité."],
 ["Mismo monto, categoría y fecha: {0}.","Same amount, category and date: {0}.","Même montant, même catégorie et même date : {0}."],
 ["Ahorras {0}% de tu ingreso","You save {0}% of your income","Vous épargnez {0} % de vos revenus"],
-["{0} te costó {1} horas de trabajo","{0} cost you {1} hours of work","{0} vous a coûté {1} heures de travail"],
+["{0}: el equivalente a {1} horas de trabajo","{0}: the equivalent of {1} hours of work","{0} : l’équivalent de {1} heures de travail"],
 ["Más usadas","Most used","Les plus utilisées"],
 ["Todas","All","Toutes"],
 ["Sincronizado hace {0} min","Synced {0} min ago","Synchronisé il y a {0} min"],
@@ -2878,7 +2878,7 @@ function insights(ctx, money) {
   if (I > 0 && hours > 0) {
     let top = null, topV = 0;
     for (const c of cats) { if (GROUP[c.group]?.life) { const v = ms.byCat[c.id] || 0; if (v > topV) { topV = v; top = c; } } }
-    if (top && topV > 0) out.push({ level: 'idea', title: _t`${nm(top)} te costó ${lnum(Math.round(topV / (ctx.inc.avgTotal / hours) * 10) / 10)} horas de trabajo`, body: 'Medir gastos en horas de tu vida ayuda a decidir qué vale la pena de verdad.' });
+    if (top && topV > 0) out.push({ level: 'idea', title: _t`${nm(top)}: el equivalente a ${lnum(Math.round(topV / (ctx.inc.avgTotal / hours) * 10) / 10)} horas de trabajo`, body: 'Medir gastos en horas de tu vida ayuda a decidir qué vale la pena de verdad.' });
   }
   // san y préstamos entre personas
   for (const s of st.sans || []) {
