@@ -783,7 +783,7 @@ i18nLoad([["{0}% de tu ingreso va a ahorro e inversión (meta: 20%)","{0}% of yo
 ["Regla del excedente: {0} a tu colchón o deuda, {1} a metas o inversión y {2} para disfrutar sin culpa.","Surplus rule: {0} to your cushion or debt, {1} to goals or investing and {2} to enjoy guilt-free.","Règle de l’excédent : {0} pour votre matelas ou vos dettes, {1} pour vos objectifs ou l’investissement et {2} pour vous faire plaisir sans culpabilité."],
 ["Mismo monto, categoría y fecha: {0}.","Same amount, category and date: {0}.","Même montant, même catégorie et même date : {0}."],
 ["Ahorras {0}% de tu ingreso","You save {0}% of your income","Vous épargnez {0} % de vos revenus"],
-["{0}: el equivalente a {1} horas de trabajo","{0}: the equivalent of {1} hours of work","{0} : l’équivalent de {1} heures de travail"],
+["{0}: el equivalente a {1} horas de trabajo","{0}: the equivalent of {1} hours of work","{0} : l’équivalent de {1} h de travail"],
 ["Más usadas","Most used","Les plus utilisées"],
 ["Todas","All","Toutes"],
 ["Sincronizado hace {0} min","Synced {0} min ago","Synchronisé il y a {0} min"],
@@ -1030,7 +1030,7 @@ i18nLoad([["{0}% de tu ingreso va a ahorro e inversión (meta: 20%)","{0}% of yo
 ["descartado","discarded","écarté"],
 ["faltan {0} {1}","{0} {1} to go","encore {0} {1}"],
 ["listo para decidir","ready to decide","à vous de décider"],
-["{0} horas de tu trabajo,","{0} hours of your work,","{0} heures de votre travail,"],
+["{0} horas de tu trabajo,","{0} hours of your work,","{0} h de votre travail,"],
 ["Comprar","Buy","Acheter"],
 ["Descartar","Discard","Écarter"],
 ["Eliminar {0}","Delete {0}","Supprimer {0}"],
@@ -1294,7 +1294,7 @@ i18nLoad([["{0}% de tu ingreso va a ahorro e inversión (meta: 20%)","{0}% of yo
 ["Listo: tus montos ahora están en {0}.","Done: your amounts are now in {0}.","C’est fait : vos montants sont désormais en {0}."],
 ["Escribe {0} para confirmar.","Type {0} to confirm.","Saisissez {0} pour confirmer."],
 ["Eres el coach financiero de la app {0}. Responde en español, en tono cercano y directo, en máximo 180 palabras, pensado para leer en el celular. Usa los números reales del usuario (datos abajo, montos en {1}) y da pasos concretos con cifras. No inventes datos que no estén. Si algo depende de información que falta, dilo en una línea. No recomiendes productos financieros específicos por nombre. Si la pregunta es de inversión, impuestos o temas legales importantes, recuerda en una frase que es orientación educativa. DATOS DEL USUARIO (JSON): {2}","You are the financial coach of the {0} app. Answer in English, in a warm and direct tone, in at most 180 words, written to be read on a phone. Use the user’s real numbers (data below, amounts in {1}) and give concrete steps with figures. Do not make up data that isn’t there. If something depends on missing information, say so in one line. Do not recommend specific financial products by name. If the question is about investing, taxes or important legal matters, remind the user in one sentence that this is educational guidance. USER DATA (JSON): {2}","Vous êtes le coach financier de l’appli {0}. Répondez en français, en vouvoyant, sur un ton chaleureux et direct, en 180 mots maximum, pour une lecture sur téléphone. Utilisez les vrais chiffres de l’utilisateur (données ci-dessous, montants en {1}) et donnez des étapes concrètes chiffrées. N’inventez aucune donnée absente. Si quelque chose dépend d’une information manquante, dites-le en une ligne. Ne recommandez aucun produit financier précis par son nom. Si la question porte sur l’investissement, la fiscalité ou des sujets juridiques importants, rappelez en une phrase qu’il s’agit d’une information pédagogique. DONNÉES DE L’UTILISATEUR (JSON) : {2}"],
-["Equivale a {0} horas de tu trabajo.","That equals {0} hours of your work.","Cela équivaut à {0} heures de votre travail."],
+["Equivale a {0} horas de tu trabajo.","That equals {0} hours of your work.","Cela équivaut à {0} h de votre travail."],
 ["No puedes quitar la tasa: tienes ingresos o pagos fijos en {0}.","You can’t remove the rate: you have income or recurring payments in {0}.","Impossible de retirer le taux : vous avez des revenus ou des paiements récurrents en {0}."],
 ["Ese archivo no es una copia de seguridad de {0}.","That file isn’t a {0} backup.","Ce fichier n’est pas une sauvegarde {0}."],
 ["Se reemplazan tus datos actuales por la copia ({0} {1}).","Your current data will be replaced by the backup ({0} {1}).","Vos données actuelles sont remplacées par la sauvegarde ({0} {1})."],
@@ -6246,7 +6246,7 @@ function quickApply(form, it, n) {
   if (goal) parts.push(chip(nm(goal), false));
   parts.push(chip(tr(dayLabel(it.date)), false));
   if (it.shared) parts.push(chip(tr('Compartido'), false));
-  if (it.note) parts.push(chip(mark('«' + it.note + '»'), false));
+  if (it.note) parts.push(chip(mark(LANG === 'en' ? '“' + it.note + '”' : LANG === 'fr' ? '«\u00a0' + it.note + '\u00a0»' : '«' + it.note + '»'), false));
   if (Quick.total > 1) parts.push(_t`<span class="chip static count">${n} de ${Quick.total}</span>`);
   const notes = [];
   if (it.typeGuess || it.catGuess) notes.push(tr('Lo que lleva «?» es una suposición: revísalo antes de registrar.'));
@@ -7360,7 +7360,7 @@ function updateHours(el) {
   const hr = hourlyRate(CTX);
   const cur = form && form.querySelector('[name=currency]') ? form.querySelector('[name=currency]').value : S.profile.currency;
   const v = toBase(S, parseAmount(el.value), cur);
-  h.textContent = hr > 0 && v > 0 && form && form.dataset.type === 'gasto' ? _t`Equivale a ${(v / hr).toFixed(1)} horas de tu trabajo.` : cur !== S.profile.currency && v > 0 ? _t`≈ ${fmt(v)}` : '';
+  h.textContent = hr > 0 && v > 0 && form && form.dataset.type === 'gasto' ? _t`Equivale a ${lnum((v / hr).toFixed(1))} horas de tu trabajo.` : cur !== S.profile.currency && v > 0 ? _t`≈ ${fmt(v)}` : '';
 }
 function onChange(e) {
   const el = e.target;

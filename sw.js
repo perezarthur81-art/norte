@@ -1,5 +1,5 @@
 /* Norte: service worker. La app abre sin conexión; con conexión siempre trae la versión más nueva. */
-const VERSION = 'norte-v2-9';
+const VERSION = 'norte-v2-10';
 const SHELL = [
   './',
   'index.html',
