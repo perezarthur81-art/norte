@@ -12,8 +12,14 @@
 <meta property="og:title" content="Privacidad | Norte">
 <meta property="og:description" content="Política de privacidad de Norte: tus datos financieros se guardan solo en tu dispositivo. Sin cuentas, sin cookies, sin analítica y sin anuncios.">
 <meta property="og:locale" content="es_DO">
-<meta property="og:url" content="privacidad.html">
-<meta property="og:image" content="icons/icon-512.png">
+<meta property="og:url" content="https://norte.arthurlabs.app/privacidad.html">
+<meta property="og:image" content="https://norte.arthurlabs.app/site-img/og-norte.jpg">
+<meta property="og:image:secure_url" content="https://norte.arthurlabs.app/site-img/og-norte.jpg">
+<meta property="og:image:type" content="image/jpeg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Norte: descubre cuánto puedes gastar hoy. En español, inglés y francés.">
+<meta name="twitter:card" content="summary_large_image">
 <link rel="alternate" hreflang="es" href="privacidad.html?lang=es">
 <link rel="alternate" hreflang="en" href="privacidad.html?lang=en">
 <link rel="alternate" hreflang="fr" href="privacidad.html?lang=fr">
@@ -107,7 +113,7 @@ function setHead(T) {
   setMeta('meta[property="og:locale"]', OG_LOCALE[lang]);
   if (/^https?:$/.test(location.protocol)) {
     setMeta('meta[property="og:url"]', location.origin + location.pathname + '?lang=' + lang);
-    setMeta('meta[property="og:image"]', new URL('icons/icon-512.png', location.href).href);
+    setMeta('meta[property="og:image"]', new URL('site-img/og-norte.jpg', location.href).href);
   }
 }
 function mount(renderBody) {
